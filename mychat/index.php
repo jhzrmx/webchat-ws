@@ -221,13 +221,21 @@ sideBar("mobile");
 	}
 
 	async function updateUserHeader(receiverUserIdToSend) {
-		const responseheader = await fetch("../backend/getHeaderUserHTML.php?uid=" + receiverUserId);
-		$userHeader.html(await responseheader.text());
+		try {
+			const responseheader = await fetch("../backend/getHeaderUserHTML.php?uid=" + receiverUserId);
+			$userHeader.html(await responseheader.text());
+		} catch (error) {
+			swal("Error", "An error occured while fetching user header: " + error, "error");
+		}
 	}
 
 	async function updateAllMessages(receiverUserIdToSend) {
-		const responsechat = await fetch("../backend/getReceiverChatsHTML.php?uid=" + receiverUserId);
-		$chatContent.html(await responsechat.text());
+		try {
+			const responsechat = await fetch("../backend/getReceiverChatsHTML.php?uid=" + receiverUserId);
+			$chatContent.html(await responsechat.text());
+		} catch (error) {
+			swal("Error", "An error occured while fetching messages: " + error, "error");
+		}
 		$scrollableChats.scrollTop($scrollableChats.prop("scrollHeight"));
 	}
 

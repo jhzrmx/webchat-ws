@@ -74,6 +74,7 @@ if (!verifyLogin($pdo)) {
 	const senderUserId = "<?php echo $_COOKIE['wcipa-ui']; ?>";
     var receiverUserId = "";
     usersFriendsList.innerHTML = `<p class="text-center"><br>Getting list of users...</p>`;
+    scrollableChats.scrollTop = scrollableChats.scrollHeight;
 
     async function getUsers() {
     	try {
@@ -115,12 +116,14 @@ if (!verifyLogin($pdo)) {
 	        	conversations.forEach(chat => {
 		            const messageElement = document.createElement('div');
 		            messageElement.classList.add('flex', 'mt-3');
-		            if (chat.sender_user_id === senderUserId) {
-		            	messageElement.classList.add('justify-end');
-		                messageElement.innerHTML = `<div class="bg-blue-500 text-white px-4 py-2 rounded-2xl max-w-xs">${chat.text_sent}</div>`;
-		            } else {
-		                messageElement.classList.add('justify-start');
+		            console.log(chat.sender_user_id);
+		            console.log(senderUserId);
+		            if (chat.sender_user_id === receiverUserId) {
+		            	messageElement.classList.add('justify-start');
 		                messageElement.innerHTML = `<div class="bg-gray-100 px-4 py-2 rounded-2xl max-w-xs">${chat.text_sent}</div>`;
+		            } else {
+		                messageElement.classList.add('justify-end');
+		                messageElement.innerHTML = `<div class="bg-blue-500 text-white px-4 py-2 rounded-2xl max-w-xs">${chat.text_sent}</div>`;
 		            }
 		            chatContent.appendChild(messageElement);
 		        });

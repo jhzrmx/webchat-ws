@@ -113,12 +113,10 @@ class ChatServer implements MessageComponentInterface {
 
         $messages = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        foreach ($this->clients as $client) {
-            $client->send(json_encode([
-                'type' => 'get_messages',
-                'conversation' => array_reverse($messages)
-            ]));
-        }
+        $from->send(json_encode([
+            'type' => 'get_messages',
+            'conversation' => array_reverse($messages)
+        ]));
     }
 
     public function onClose(ConnectionInterface $conn) {

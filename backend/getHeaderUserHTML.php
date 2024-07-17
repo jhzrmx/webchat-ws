@@ -1,8 +1,9 @@
 <?php 
 require 'connection.php';
+require 'verifyLogin.php';
 require '../components/HeaderUser.php';
 
-if (empty($_GET['uid'])) {
+if (!verifyLogin($pdo)) {
 	echo "User not found";
 	exit();
 }
@@ -17,7 +18,7 @@ if (count($rows) > 0) {
 		headerUser($row['full_name']);
 	}
 } else {
-	echo "User not found";
+	headerUser("User not found");
 }
 
 ?>

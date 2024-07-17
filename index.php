@@ -1,5 +1,6 @@
 <?php
 require 'backend/connection.php';
+require 'backend/verifyLogin.php';
 require 'backend/generateUID.php';
 require 'components/HTML.php';
 require 'components/Login.php';
@@ -29,26 +30,13 @@ $cookieOptions = [
     'samesite' => 'None' // Set SameSite attribute
 ];
 
+if (verifyLogin($pdo)) {
+	header('location: mychat/');
+} else {
+	swal("Please login again.", "", "info");
+}
+
 try {
-	if (isset($_COOKIE['wcipa-ai']) && isset($_COOKIE['wcipa-ui']) && isset($_COOKIE['wcipa-pw'])) {
-		$stmt = $pdo->prepare("SELECT * FROM `accounts` JOIN `users` ON `accounts`.`user_id` = `users`.`user_id`  WHERE `accounts`.`account_id` = :account_id");
-		$stmt->bindParam(':account_id', $_COOKIE['wcipa-ai']);
-		$stmt->execute();
-		$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-		if (count($rows) > 0) {
-			foreach ($rows as $row) {
-				if ($_COOKIE['wcipa-pw'] === $row['password']) {
-					header('location: mychat/');
-				} else {
-					swal("Please login again.", "", "info");
-				}
-				break;
-			}
-		} else {
-			swal("Please login again.", "", "info");
-		}
-	}
-	
 	if (isset($_POST['login'])) {
 		$stmt = $pdo->prepare("SELECT * FROM `accounts` JOIN `users` ON `accounts`.`user_id` = `users`.`user_id` WHERE `accounts`.`username` = :username");
 		$stmt->bindParam(':username', $_POST['username']);

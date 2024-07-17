@@ -1,8 +1,9 @@
 <?php 
 require 'connection.php';
+require 'verifyLogin.php';
 require '../components/MessageList.php';
 
-if (empty($_COOKIE['wcipa-ui'])) {
+if (!verifyLogin($pdo)) {
 	echo "No Users found";
 	exit();
 }

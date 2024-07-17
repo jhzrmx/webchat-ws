@@ -32,8 +32,6 @@ $cookieOptions = [
 
 if (verifyLogin($pdo)) {
 	header('location: mychat/');
-} else {
-	swal("Please login again.", "", "info");
 }
 
 try {

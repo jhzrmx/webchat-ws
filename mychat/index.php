@@ -73,9 +73,9 @@ if (!verifyLogin($pdo)) {
 	const chatContent = document.getElementById("chatContent");
 	const senderUserId = "<?php echo $_COOKIE['wcipa-ui']; ?>";
     var receiverUserId = "";
+    usersFriendsList.innerHTML = `<p class="text-center"><br>Getting list of users...</p>`;
 
     async function getUsers() {
-    	usersFriendsList.innerHTML = `<p class="text-center"><br>Getting list of users...</p>`;
     	try {
     		const response = await fetch("../backend/getUsersHTML.php");
     		usersFriendsList.innerHTML = await response.text();
@@ -95,6 +95,7 @@ if (!verifyLogin($pdo)) {
 	};
 
 	socket.onmessage = (event) => {
+		getUsers();
 	    const message = JSON.parse(event.data);
 	    // console.log('Received message:', message);
 	    if (message['type'] === 'chat_message') {
@@ -137,7 +138,6 @@ if (!verifyLogin($pdo)) {
 	};
 
 	sendMessage.onclick = () => {
-		getUsers();
 		if (messageContent.value.trim() === "") return;
 		const messageToSend = {
 		    type: 'chat_message',

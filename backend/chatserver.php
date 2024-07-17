@@ -41,7 +41,34 @@ class ChatServer implements MessageComponentInterface {
         }
     }
 
+    private function loginVerification($messageData) {
+        if (isset($messageData['field1']) && isset($messageData['field2']) && isset($messageData['sender_user_id'])) {
+            $stmt = $this->database->prepare("SELECT * FROM `accounts` JOIN `users` ON `accounts`.`user_id` = `users`.`user_id`  WHERE `accounts`.`account_id` = :account_id");
+            $stmt->bindParam(':account_id', $messageData['field1']);
+            $stmt->execute();
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            if (count($rows) > 0) {
+                foreach ($rows as $row) {
+                    if ($messageData['field2'] === $row['password']) {
+                        return true;
+                    } else {
+                        echo "Here";
+                        return false;
+                    }
+                    break;
+                }
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
     protected function sendChatMessage(ConnectionInterface $from, $messageData) {
+        if (!$this->loginVerification($messageData)) {
+            return;
+        }
         $randomChatId = generateUID();
         $accountId = $messageData['field1'];
         $password = $messageData['field2'];
@@ -64,6 +91,9 @@ class ChatServer implements MessageComponentInterface {
     }
 
     protected function getChatMessages(ConnectionInterface $from, $messageData) {
+        if (!$this->loginVerification($messageData)) {
+            return;
+        }
         $accountId = $messageData['field1'];
         $password = $messageData['field2'];
         $senderUserId = $messageData['sender_user_id'];

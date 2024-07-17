@@ -142,7 +142,7 @@ if (!verifyLogin($pdo)) {
 		const messageToSend = {
 		    type: 'chat_message',
 		    field1: "<?php echo $_COOKIE['wcipa-ai']; ?>",
-		    field2: "<?php echo $_COOKIE['wcipa-pw'] ?>",
+		    field2: "<?php echo $_COOKIE['wcipa-pw']; ?>",
 		    sender_user_id: senderUserId,
 		    receiver_user_id: receiverUserId,
 		    content: messageContent.value
@@ -158,7 +158,7 @@ if (!verifyLogin($pdo)) {
     	const messageToSend = {
 		    type: 'get_messages',
 		    field1: "<?php echo $_COOKIE['wcipa-ai']; ?>",
-		    field2: "<?php echo $_COOKIE['wcipa-pw'] ?>",
+		    field2: "<?php echo $_COOKIE['wcipa-pw']; ?>",
 		    sender_user_id: senderUserId,
 		    receiver_user_id: receiverUserIdToSend
 		};

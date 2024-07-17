@@ -105,7 +105,7 @@ if (isset($_COOKIE['wcipa-ai']) && isset($_COOKIE['wcipa-ui']) && isset($_COOKIE
     	getUsers();
     }
 
-    const socket = new WebSocket('ws://localhost:8080');
+    const socket = new WebSocket('ws://<?php echo $_SERVER['HTTP_HOST']; ?>:8080');
 
 	socket.onopen = (event) => {
 	    console.log('WebSocket connection established.');

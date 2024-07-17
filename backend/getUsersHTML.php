@@ -40,7 +40,8 @@ $stmt = $pdo->prepare("
 	WHERE
 		users.user_id != :current_user_id
 	ORDER BY 
-	    users.full_name ASC;
+	    last_message.sent_dt
+	DESC;
 ");
 
 $stmt->bindParam(':current_user_id', $_COOKIE['wcipa-ui']);

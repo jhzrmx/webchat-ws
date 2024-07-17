@@ -57,9 +57,9 @@ try {
 		if (count($rows) > 0) {
 			foreach ($rows as $row) {
 				if (password_verify($_POST['password'], $row['password'])) {
-					setcookie('wcipa-ai', $row['account_id'], $cookieOptions);
-					setcookie('wcipa-ui', $row['user_id'], $cookieOptions);
-					setcookie('wcipa-pw', $row['password'], $cookieOptions);
+					setcookie('wcipa-ai', $row['account_id'], time() + (86400 * 30), '/');
+					setcookie('wcipa-ui', $row['user_id'], time() + (86400 * 30), '/');
+					setcookie('wcipa-pw', $row['password'], time() + (86400 * 30), '/');
 					swalThen("Login Successful", "Welcome, " . $row['full_name'], "success", "() => {window.location.href = 'mychat/'}");
 				} else {
 					swal("Wrong Password", "", "error");
@@ -90,9 +90,9 @@ try {
 
 			$stmt_usr->execute();
 			$stmt_acc->execute();
-			setcookie('wcipa-ui', $randomUserId, $cookieOptions);
-			setcookie('wcipa-ai', $randomAccountId, $cookieOptions);
-			setcookie('wcipa-pw', $hashedPassword, $cookieOptions);
+			setcookie('wcipa-ui', $randomUserId, time() + (86400 * 30), '/');
+			setcookie('wcipa-ai', $randomAccountId, time() + (86400 * 30), '/');
+			setcookie('wcipa-pw', $hashedPassword, time() + (86400 * 30), '/');
 			swalThen("Signup Successful", "Welcome, " . $_POST['fullname'], "success", "() => {window.location.href = 'mychat/'}");
 		} else {
 			swal("Oops", "Username already taken", "error");

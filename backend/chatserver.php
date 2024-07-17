@@ -109,7 +109,8 @@ $server = IoServer::factory(
             new ChatServer()
         )
     ),
-    8080
+    8080,
+    '0.0.0.0'
 );
 
 echo "WebSocket server running...\n";

@@ -34,9 +34,6 @@ class ChatServer implements MessageComponentInterface {
             case 'chat_message':
                 $this->sendChatMessage($from, $messageData);
                 break;
-            case 'get_messages':
-                $this->getChatMessages($from, $messageData);
-                break;
             // Handle other message types as needed
         }
     }
@@ -88,35 +85,6 @@ class ChatServer implements MessageComponentInterface {
                 'sent_dt' => date('Y-m-d H:i:s')
             ]));
         }
-    }
-
-    protected function getChatMessages(ConnectionInterface $from, $messageData) {
-        if (!$this->loginVerification($messageData)) {
-            return;
-        }
-        $accountId = $messageData['field1'];
-        $password = $messageData['field2'];
-        $senderUserId = $messageData['sender_user_id'];
-        $receiverUserId = $messageData['receiver_user_id'];
-        
-        $stmt = $this->database->prepare("
-            SELECT * FROM chats 
-            WHERE (sender_user_id = :sender_user_id AND receiver_user_id = :receiver_user_id) 
-               OR (sender_user_id = :receiver_user_id AND receiver_user_id = :sender_user_id) 
-            ORDER BY sent_dt DESC 
-            LIMIT 15
-        ");
-        $stmt->execute([
-            ':sender_user_id' => $senderUserId,
-            ':receiver_user_id' => $receiverUserId
-        ]);
-
-        $messages = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        $from->send(json_encode([
-            'type' => 'get_messages',
-            'conversation' => array_reverse($messages)
-        ]));
     }
 
     public function onClose(ConnectionInterface $conn) {

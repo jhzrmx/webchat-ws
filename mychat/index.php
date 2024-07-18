@@ -109,26 +109,6 @@ if (!verifyLogin($pdo)) {
 					<div class="flex items-center text-black justify-start mt-3"><div class="bg-white px-3 py-2 rounded-2xl max-w-xs"><pre class=font-sans>${message['content']}</pre></div></div>`;
 	    	}
 	    }
-	    if (message['type'] === 'get_messages') {
-	        chatContent.innerHTML = '';
-	        const conversations = message['conversation'];
-	        if (conversations.length > 0) {
-	        	conversations.forEach(chat => {
-		            const messageElement = document.createElement('div');
-		            messageElement.classList.add('flex', 'mt-3');
-		            console.log(chat.sender_user_id);
-		            console.log(senderUserId);
-		            if (chat.sender_user_id === receiverUserId) {
-		            	messageElement.classList.add('justify-start');
-		                messageElement.innerHTML = `<div class="bg-gray-100 px-4 py-2 rounded-2xl max-w-xs">${chat.text_sent}</div>`;
-		            } else {
-		                messageElement.classList.add('justify-end');
-		                messageElement.innerHTML = `<div class="bg-blue-500 text-white px-4 py-2 rounded-2xl max-w-xs">${chat.text_sent}</div>`;
-		            }
-		            chatContent.appendChild(messageElement);
-		        });
-	        }
-	    }
 		scrollableChats.scrollTop = scrollableChats.scrollHeight;
 	};
 
@@ -158,15 +138,28 @@ if (!verifyLogin($pdo)) {
     	receiverUserId = receiverUserIdToSend;
     	const responseheader = await fetch("../backend/getHeaderUserHTML.php?uid=" + receiverUserId);
     	userHeader.innerHTML = await responseheader.text();
-    	const messageToSend = {
-		    type: 'get_messages',
-		    field1: "<?php echo $_COOKIE['wcipa-ai']; ?>",
-		    field2: "<?php echo $_COOKIE['wcipa-pw']; ?>",
-		    sender_user_id: senderUserId,
-		    receiver_user_id: receiverUserIdToSend
-		};
+    	const responsechat = await fetch("../backend/getReceiverChats.php?uid=" + receiverUserId);
+    	const textjson = await responsechat.text();
+    	const resultOfJson = JSON.parse(textjson);
+    	chatContent.innerHTML = '';
+	    const conversations = resultOfJson['conversation'];
+	    if (conversations.length > 0 && resultOfJson['success']) {
+	    	conversations.forEach(chat => {
+		        const messageElement = document.createElement('div');
+		        messageElement.classList.add('flex', 'mt-3');
+		        console.log(chat.sender_user_id);
+		        console.log(senderUserId);
+		        if (chat.sender_user_id === senderUserId) {
+		        	messageElement.classList.add('justify-end');
+		            messageElement.innerHTML = `<div class="bg-blue-500 text-white px-4 py-2 rounded-2xl max-w-xs">${chat.text_sent}</div>`;
+	            } else {
+	                messageElement.classList.add('justify-start');
+	                messageElement.innerHTML = `<div class="bg-gray-100 px-4 py-2 rounded-2xl max-w-xs">${chat.text_sent}</div>`;
+		        }
+		        chatContent.appendChild(messageElement);
+		    });
+	   	}
 		scrollableChats.scrollTop = scrollableChats.scrollHeight;
-		socket.send(JSON.stringify(messageToSend));
     }
 
     messageContent.addEventListener("keydown", (event) => {

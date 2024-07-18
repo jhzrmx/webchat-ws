@@ -174,8 +174,8 @@ sideBar("mobile");
 		$("#sideBarMobile").hide();
 		isSideBarMobileOpened = false;
 		$noUserSelMessage.hide();
-		await updateAllMessages(receiverUserIdToSend);
 		await updateUserHeader(receiverUserIdToSend);
+		await updateAllMessages(receiverUserIdToSend);
 	}
 
 	async function updateUserHeader(receiverUserIdToSend) {

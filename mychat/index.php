@@ -28,8 +28,8 @@ if (!verifyLogin($pdo)) {
     <!-- Left sidebar for friends list (hidden on mobile) -->
     <div class="hidden h-dvh pl-4 py-4 md:block ">
         <div class="w-full h-full overflow-hidden bg-gray-300 rounded-lg p-3">
-            <div class="flex items-center mx-2 mb-3 mt-1">
-            	<h2 class="w-full text-2xl text-left font-bold">My Chats</h2>
+            <div class="flex items-center mb-3 mt-1">
+            	<h2 class="w-full ml-2 text-2xl text-left font-bold">My Chats</h2>
             	<button class="w-12 h-11 rounded-full hover:bg-gray-50 px-1">
             		<img class="w-10 h-10 justify-end" src="../img/icons/profile-circle-svgrepo-com.svg">
             	</button>

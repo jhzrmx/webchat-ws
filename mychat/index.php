@@ -79,6 +79,7 @@ sideBar("mobile");
 	const $messageContent = $("#messageContent");
 	const $sendMessage = $("#sendMessage");
 	const $noUserSelMessage = $("#noUserSelMessage");
+	var isSideBarMobileOpened = false;
 
 	$usersFriendsList.html('<p class="text-center"><br>Getting list of users...</p>');
 	$sideBarMobile.hide();
@@ -90,13 +91,12 @@ sideBar("mobile");
 	function clickToShowHide(button_id, target_show_hide) {
 	    const target = $(target_show_hide);
 	    target.hide();
-	    let isOpened = false;
 	    $(button_id).click((e) => {
-	        isOpened = !isOpened;
-	        if (isOpened) {
-	            target.slideDown();
+	        isSideBarMobileOpened = !isSideBarMobileOpened;
+	        if (isSideBarMobileOpened) {
+	            target.fadeOut();
 	        } else {
-	            target.slideUp();
+	            target.fadeIn();
 	        }
 	    });
 	}
@@ -158,7 +158,8 @@ sideBar("mobile");
 		history.pushState(null, null, '?id=' + receiverUserIdToSend);
 		receiverUserId = receiverUserIdToSend;
 		$bottomTextBar.css("display", "flex");
-		$("#sideBarMobile").hide();
+		$("#sideBarMobile").fadeOut();
+		isSideBarMobileOpened = true;
 		$noUserSelMessage.hide();
 		const responseheader = await fetch("../backend/getHeaderUserHTML.php?uid=" + receiverUserId);
 		$userHeader.html(await responseheader.text());

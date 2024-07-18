@@ -92,12 +92,12 @@ sideBar("mobile");
 	    const target = $(target_show_hide);
 	    target.hide();
 	    $(button_id).click((e) => {
-	        isSideBarMobileOpened = !isSideBarMobileOpened;
 	        if (isSideBarMobileOpened) {
 	            target.fadeOut();
 	        } else {
 	            target.fadeIn();
 	        }
+	        isSideBarMobileOpened = !isSideBarMobileOpened;
 	    });
 	}
 
@@ -141,6 +141,7 @@ sideBar("mobile");
 	    	}
 	    }
 	    */
+	    updateAllMessages(message['receiver_user_id']);
 		$scrollableChats.scrollTop($scrollableChats.prop("scrollHeight"));
 	};
 
@@ -170,11 +171,19 @@ sideBar("mobile");
 		history.pushState(null, null, '?id=' + receiverUserIdToSend);
 		receiverUserId = receiverUserIdToSend;
 		$bottomTextBar.css("display", "flex");
-		// $("#sideBarMobile").fadeOut();
-		// isSideBarMobileOpened = false;
+		$("#sideBarMobile").hide();
+		isSideBarMobileOpened = false;
 		$noUserSelMessage.hide();
+		await updateAllMessages(receiverUserIdToSend);
+		updateUserHeader(receiverUserIdToSend);
+	}
+
+	async function updateUserHeader(receiverUserIdToSend) {
 		const responseheader = await fetch("../backend/getHeaderUserHTML.php?uid=" + receiverUserId);
 		$userHeader.html(await responseheader.text());
+	}
+
+	async function updateAllMessages(receiverUserIdToSend) {
 		const responsechat = await fetch("../backend/getReceiverChats.php?uid=" + receiverUserId);
 		const textjson = await responsechat.text();
 		const resultOfJson = JSON.parse(textjson);

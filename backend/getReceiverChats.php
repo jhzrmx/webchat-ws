@@ -15,7 +15,7 @@ $stmt = $pdo->prepare("
     WHERE (sender_user_id = :sender_user_id AND receiver_user_id = :receiver_user_id) 
        OR (sender_user_id = :receiver_user_id AND receiver_user_id = :sender_user_id) 
     ORDER BY sent_dt DESC 
-    LIMIT 15
+    LIMIT 30
 ");
 $stmt->execute([
     ':sender_user_id' => $senderUserId,

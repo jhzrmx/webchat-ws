@@ -99,6 +99,8 @@ if (!verifyLogin($pdo)) {
 		getUsers();
 	    const message = JSON.parse(event.data);
 	    // console.log('Received message:', message);
+	    /*
+	    Issue on this code: The chat bubbles no longer adds on the other side even the receiver_user_id of of the sent websocket is the receiverUserId of the current chat
 	    if (message['type'] === 'chat_message' && message['receiver_user_id'] === receiverUserId) {
 	    	if (message['sender_user_id'] === senderUserId) {
 	    		chatContent.innerHTML += `
@@ -109,6 +111,8 @@ if (!verifyLogin($pdo)) {
 					<div class="flex items-center text-black justify-start mt-3"><div class="bg-white px-3 py-2 rounded-2xl max-w-xs"><pre class=font-sans>${message['content']}</pre></div></div>`;
 	    	}
 	    }
+	    */
+	    getMessages(receiverUserId); // This might fix the problem but updates the whole chat
 		scrollableChats.scrollTop = scrollableChats.scrollHeight;
 	};
 

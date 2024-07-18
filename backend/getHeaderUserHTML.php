@@ -3,7 +3,7 @@ require 'connection.php';
 require 'verifyLogin.php';
 require '../components/HeaderUser.php';
 
-if (!verifyLogin($pdo)) {
+if (!verifyLogin($pdo) || !isset($_GET['uid'])) {
 	echo "User not found";
 	exit();
 }

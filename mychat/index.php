@@ -79,7 +79,7 @@ sideBar("mobile");
 	const $messageContent = $("#messageContent");
 	const $sendMessage = $("#sendMessage");
 	const $noUserSelMessage = $("#noUserSelMessage");
-	var isSideBarMobileOpened = true;
+	var isSideBarMobileOpened = false;
 
 	$usersFriendsList.html('<p class="text-center"><br>Getting list of users...</p>');
 	$sideBarMobile.hide();
@@ -127,8 +127,20 @@ sideBar("mobile");
 
 	socket.onmessage = function(event) {
 		getUsers();
-		// const message = JSON.parse(event.data);
-		getMessages(receiverUserId);
+		const message = JSON.parse(event.data);
+		/*
+	    Issue on this code: The chat bubbles no longer adds on the other side even the receiver_user_id of of the sent websocket is the receiverUserId of the current chat
+		if (message['type'] === 'chat_message' && message['receiver_user_id'] == receiverUserId) {
+	    	if (message['sender_user_id'] === senderUserId) {
+	    		chatContent.innerHTML += `
+					<div class="flex items-center text-white justify-end mt-3"><div class="bg-blue-500 px-3 py-2 rounded-2xl max-w-xs"><pre class=font-sans>${message['content']}</pre></div></div>`;
+				messageContent.value = "";
+	    	} else {
+	    		chatContent.innerHTML += `
+					<div class="flex items-center text-black justify-start mt-3"><div class="bg-white px-3 py-2 rounded-2xl max-w-xs"><pre class=font-sans>${message['content']}</pre></div></div>`;
+	    	}
+	    }
+	    */
 		$scrollableChats.scrollTop($scrollableChats.prop("scrollHeight"));
 	};
 
@@ -158,8 +170,8 @@ sideBar("mobile");
 		history.pushState(null, null, '?id=' + receiverUserIdToSend);
 		receiverUserId = receiverUserIdToSend;
 		$bottomTextBar.css("display", "flex");
-		$("#sideBarMobile").fadeOut();
-		isSideBarMobileOpened = true;
+		// $("#sideBarMobile").fadeOut();
+		// isSideBarMobileOpened = false;
 		$noUserSelMessage.hide();
 		const responseheader = await fetch("../backend/getHeaderUserHTML.php?uid=" + receiverUserId);
 		$userHeader.html(await responseheader.text());

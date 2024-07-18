@@ -72,7 +72,7 @@ if (!verifyLogin($pdo)) {
 	const scrollableChats = document.getElementById("scrollableChats");
 	const chatContent = document.getElementById("chatContent");
 	const senderUserId = "<?php echo $_COOKIE['wcipa-ui']; ?>";
-    var receiverUserId = "";
+    var receiverUserId = "<?php echo isset($_GET['id']) ? $_GET['id'] : ''; ?>";
     usersFriendsList.innerHTML = `<p class="text-center"><br>Getting list of users...</p>`;
     scrollableChats.scrollTop = scrollableChats.scrollHeight;
 
@@ -99,7 +99,7 @@ if (!verifyLogin($pdo)) {
 		getUsers();
 	    const message = JSON.parse(event.data);
 	    // console.log('Received message:', message);
-	    if (message['type'] === 'chat_message') {
+	    if (message['type'] === 'chat_message' && message['receiver_user_id'] === receiverUserId) {
 	    	if (message['sender_user_id'] === senderUserId) {
 	    		chatContent.innerHTML += `
 					<div class="flex items-center text-white justify-end mt-3"><div class="bg-blue-500 px-3 py-2 rounded-2xl max-w-xs"><pre class=font-sans>${message['content']}</pre></div></div>`;

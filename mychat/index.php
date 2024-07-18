@@ -158,7 +158,7 @@ sideBar("mobile");
 		history.pushState(null, null, '?id=' + receiverUserIdToSend);
 		receiverUserId = receiverUserIdToSend;
 		$bottomTextBar.css("display", "flex");
-		$("#sideBarMobile").slideUp();
+		$("#sideBarMobile").hide();
 		$noUserSelMessage.hide();
 		const responseheader = await fetch("../backend/getHeaderUserHTML.php?uid=" + receiverUserId);
 		$userHeader.html(await responseheader.text());

@@ -166,10 +166,10 @@ if (!verifyLogin($pdo)) {
 				const messageElement = $('<div>').addClass('flex mt-3');
 				if (chat.sender_user_id === senderUserId) {
 					messageElement.addClass('justify-end');
-					messageElement.html(`<div class="bg-blue-500 text-white px-4 py-2 rounded-2xl max-w-xs">${chat.text_sent}</div>`);
+					messageElement.html(`<div class="bg-blue-500 text-white px-4 py-2 rounded-2xl max-w-xs whitespace-pre-wrap">${chat.text_sent}</div>`);
         		} else {
         			messageElement.addClass('justify-start');
-        			messageElement.html(`<div class="bg-gray-100 px-4 py-2 rounded-2xl max-w-xs">${chat.text_sent}</div>`);
+        			messageElement.html(`<div class="bg-gray-100 px-4 py-2 rounded-2xl max-w-xs whitespace-pre-wrap">${chat.text_sent}</div>`);
 				}
 				$chatContent.append(messageElement);
 			});

@@ -71,7 +71,7 @@ class ChatServer implements MessageComponentInterface {
         $password = $messageData['field2'];
         $senderUserId = $messageData['sender_user_id'];
         $receiverUserId = $messageData['receiver_user_id'];
-        $messageContent = $messageData['content'];
+        $messageContent = htmlspecialchars($messageData['content'], ENT_QUOTES, 'UTF-8');
         
         $stmt = $this->database->prepare("INSERT INTO chats (chat_id, text_sent, sender_user_id, receiver_user_id, sent_dt) VALUES (?, ?, ?, ?, NOW())");
         $stmt->execute([$randomChatId, $messageContent, $senderUserId, $receiverUserId]);

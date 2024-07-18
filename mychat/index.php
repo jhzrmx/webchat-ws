@@ -135,6 +135,7 @@ if (!verifyLogin($pdo)) {
 		    content: messageContent.value
 		};
 		socket.send(JSON.stringify(messageToSend));
+		messageContent.value = null;
     }
 
     async function getMessages(receiverUserIdToSend) {

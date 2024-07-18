@@ -4,6 +4,7 @@ require '../backend/verifyLogin.php';
 require '../backend/generateUID.php';
 require '../components/SweetAlert.php';
 require '../components/HTML.php';
+require '../components/SideBar.php';
 require '../components/MessageList.php';
 
 $html = new HTML("WebChat - My Chats");
@@ -23,29 +24,14 @@ if (!verifyLogin($pdo)) {
 	clearWebchatCookies();
 	swalThen("Please login again.", "", "info", "() => window.location.href = '../'");
 }
+
+sideBar("mobile");
+
 ?>
 
 <div class="h-dvh grid grid-cols-1 md:grid-cols-3">
     <!-- Left sidebar for friends list (hidden on mobile) -->
-    <div class="hidden h-dvh pl-4 py-4 md:block ">
-        <div class="w-full h-full overflow-hidden bg-gray-300 rounded-lg p-3">
-            <div class="flex items-center mb-3 mt-1">
-            	<h2 class="w-full ml-2 text-2xl text-left font-bold">My Chats</h2>
-            	<button class="w-12 h-11 rounded-full hover:bg-gray-50 px-1">
-            		<img class="w-10 h-10 justify-end" src="../img/icons/profile-circle-svgrepo-com.svg">
-            	</button>
-            </div>
-            <div class="w-full flex mb-2">
-            	<button id="getUsers" class="w-full font-semibold py-2 rounded-l-lg bg-gray-100 hover:bg-gray-50">Users</button>
-            	<button class="w-full font-semibold py-2 rounded-r-lg bg-gray-200 hover:bg-gray-50">Friends</button>
-            </div>
-            <div class="w-full h-full flex overflow-y-auto">
-	            <ul id="usersFriendsList" class="w-full">
-	                <!-- Example list items -->
-	            </ul>
-            </div>
-        </div>
-    </div>
+    <?php sideBar("desktop"); ?>
 
     <!-- Main chat area (takes 2 columns on medium screens and larger) -->
     <div class="h-dvh md:col-span-2 p-4">
@@ -54,7 +40,7 @@ if (!verifyLogin($pdo)) {
             <div class="flex mb-4">
             	<div id="userHeader" class="w-full flex items-center justify-start">
             	</div>
-				<button class="hover:bg-gray-50 rounded px-2">
+				<button id="openSideBarMobile" class="hover:bg-gray-50 rounded px-2">
 					<svg class="w-8 h-8 justify-end md:hidden" id="mdi-menu" viewBox="0 0 24 24">
 						<path d="M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z" />
 					</svg>
@@ -82,8 +68,10 @@ if (!verifyLogin($pdo)) {
 <script type="text/javascript">
 	const senderUserId = "<?php echo $_COOKIE['wcipa-ui']; ?>";
 	var receiverUserId = "<?php echo isset($_GET['id']) ? $_GET['id'] : ''; ?>";
-	const $btnGetUsers = $("#getUsers");
-	const $usersFriendsList = $("#usersFriendsList");
+	const $btnGetUsers = $("#getUsers, #getUsersMobile");
+	const $usersFriendsList = $("#usersFriendsList, #usersFriendsListMobile");
+	const $sideBarMobile = $("#sideBarMobile");
+	const $toggleSideBarMobile = $("#toggleSideBarMobile");
 	const $userHeader = $("#userHeader");
 	const $scrollableChats = $("#scrollableChats");
 	const $chatContent = $("#chatContent");
@@ -93,10 +81,27 @@ if (!verifyLogin($pdo)) {
 	const $noUserSelMessage = $("#noUserSelMessage");
 
 	$usersFriendsList.html('<p class="text-center"><br>Getting list of users...</p>');
+	$sideBarMobile.hide();
 
     if (receiverUserId.length === 0) {
     	$bottomTextBar.hide();
     }
+
+	function clickToShowHide(button_id, target_show_hide) {
+	    const target = $(target_show_hide);
+	    target.hide();
+	    let isOpened = false;
+	    $(button_id).click((e) => {
+	        isOpened = !isOpened;
+	        if (isOpened) {
+	            target.slideDown();
+	        } else {
+	            target.slideUp();
+	        }
+	    });
+	}
+
+	clickToShowHide("#openSideBarMobile, #closeSideBarMobile", "#sideBarMobile");
 
 	async function getUsers() {
 		try {
@@ -135,7 +140,7 @@ if (!verifyLogin($pdo)) {
 		console.log('WebSocket connection closed.');
 	};
 
-	$sendMessage.on("click", function() {
+	$sendMessage.on("click", () => {
 		if ($messageContent.val().trim() === "") return;
 		const messageToSend = {
 			type: 'chat_message',
@@ -153,6 +158,7 @@ if (!verifyLogin($pdo)) {
 		history.pushState(null, null, '?id=' + receiverUserIdToSend);
 		receiverUserId = receiverUserIdToSend;
 		$bottomTextBar.css("display", "flex");
+		$("#sideBarMobile").slideUp();
 		$noUserSelMessage.hide();
 		const responseheader = await fetch("../backend/getHeaderUserHTML.php?uid=" + receiverUserId);
 		$userHeader.html(await responseheader.text());

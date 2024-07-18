@@ -37,7 +37,7 @@ function sideBar($display) {
 	            </div>
 	            <div class="w-full flex mb-2">
 	            	<button id="getUsersMobile" class="w-full font-semibold py-2 rounded-l-lg bg-gray-100 hover:bg-gray-50">Users</button>
-	            	<button class="w-full font-semibold py-2 rounded-r-lg bg-gray-200 hover:bg-gray-50">Friends</button>
+	            	<button id="getFriendsMobile" class="w-full font-semibold py-2 rounded-r-lg bg-gray-200 hover:bg-gray-50">Friends</button>
 	            </div>
 	            <div class="w-full h-full flex overflow-y-auto">
 		            <ul id="usersFriendsListMobile" class="w-full">

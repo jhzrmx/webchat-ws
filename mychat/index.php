@@ -79,7 +79,7 @@ sideBar("mobile");
 	const $messageContent = $("#messageContent");
 	const $sendMessage = $("#sendMessage");
 	const $noUserSelMessage = $("#noUserSelMessage");
-	var isSideBarMobileOpened = false;
+	var isSideBarMobileOpened = true;
 
 	$usersFriendsList.html('<p class="text-center"><br>Getting list of users...</p>');
 	$sideBarMobile.hide();

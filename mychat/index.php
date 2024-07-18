@@ -9,6 +9,7 @@ require '../components/MessageList.php';
 $html = new HTML("WebChat - My Chats");
 $html->addLink('icon', 'https://static.xx.fbcdn.net/rsrc.php/yb/r/hLRJ1GG_y0J.ico');
 $html->addScript("../js/tailwind3.4.5.js");
+$html->addScript("../js/jquery-3.7.1.min.js");
 $html->addScript("../js/sweetalert.min.js");
 $html->startBody();
 
@@ -49,7 +50,6 @@ if (!verifyLogin($pdo)) {
     <!-- Main chat area (takes 2 columns on medium screens and larger) -->
     <div class="h-dvh md:col-span-2 p-4">
         <div class="w-full h-full flex flex-col overflow-hidden bg-gray-300 rounded-lg p-4">
-        	
             <!-- User/Friend name (Top) -->
             <div class="flex mb-4">
             	<div id="userHeader" class="w-full flex items-center justify-start">
@@ -60,130 +60,129 @@ if (!verifyLogin($pdo)) {
 					</svg>
 				</button>
             </div>
-            
             <!-- Chat content (Middle) -->
             <div id="scrollableChats" class="flex-1 px-2 overflow-y-auto">
                 <div id="chatContent" class="mb-4">
                 </div>
             </div>
-            
             <!-- Textarea and send button (Bottom) -->
-            <div class="flex mt-4">
+            <div id="bottomTextBar" class="flex mt-4">
                 <textarea id="messageContent" class="w-full rounded-3xl h-11 px-4 py-2 border-2 border-gray-300 focus:outline-none focus:border-blue-500 resize-none" rows="2" placeholder="Type your message..."></textarea>
                 <button id="sendMessage" class="ml-2 px-4 py-2 bg-blue-500 text-white rounded-3xl hover:bg-blue-600 focus:outline-none">Send</button>
+            </div>
+            <div id="noUserSelMessage" class="flex w-full h-full">
+            	<p class="w-full flex items-center justify-center">
+            		Get started by clicking on user/friend's name.
+            	</p>
             </div>
         </div>
     </div>
 </div>
 
 <script type="text/javascript">
-	const sendMessage = document.getElementById("sendMessage");
-	const btnGetUsers = document.getElementById("getUsers");
-	const usersFriendsList = document.getElementById("usersFriendsList");
-	const userHeader = document.getElementById("userHeader");
-	const messageContent = document.getElementById("messageContent");
-	const scrollableChats = document.getElementById("scrollableChats");
-	const chatContent = document.getElementById("chatContent");
 	const senderUserId = "<?php echo $_COOKIE['wcipa-ui']; ?>";
-    var receiverUserId = "<?php echo isset($_GET['id']) ? $_GET['id'] : ''; ?>";
-    usersFriendsList.innerHTML = `<p class="text-center"><br>Getting list of users...</p>`;
-    scrollableChats.scrollTop = scrollableChats.scrollHeight;
+	var receiverUserId = "<?php echo isset($_GET['id']) ? $_GET['id'] : ''; ?>";
+	const $btnGetUsers = $("#getUsers");
+	const $usersFriendsList = $("#usersFriendsList");
+	const $userHeader = $("#userHeader");
+	const $scrollableChats = $("#scrollableChats");
+	const $chatContent = $("#chatContent");
+	const $bottomTextBar = $("#bottomTextBar");
+	const $messageContent = $("#messageContent");
+	const $sendMessage = $("#sendMessage");
+	const $noUserSelMessage = $("#noUserSelMessage");
 
-    async function getUsers() {
-    	try {
-    		const response = await fetch("../backend/getUsersHTML.php");
-    		usersFriendsList.innerHTML = await response.text();
-    	} catch (error) {
-    		usersFriendsList.innerHTML = `<p class="text-center"><br>Unable to display all users.</p>`;
-    	}
+	$usersFriendsList.html('<p class="text-center"><br>Getting list of users...</p>');
+
+    if (receiverUserId.length === 0) {
+    	$bottomTextBar.hide();
     }
-    getUsers();
-    btnGetUsers.onclick = () => {
-    	getUsers();
-    }
 
-    const socket = new WebSocket('ws://<?php echo $_SERVER['HTTP_HOST']; ?>:8080');
+	async function getUsers() {
+		try {
+			const response = await fetch("../backend/getUsersHTML.php");
+			$usersFriendsList.html(await response.text());
+		} catch (error) {
+			$usersFriendsList.html('<p class="text-center"><br>Unable to display all users.</p>');
+		}
+	}
 
-	socket.onopen = (event) => {
+	getUsers();
+	$scrollableChats.scrollTop($scrollableChats.prop("scrollHeight"));
+
+	$btnGetUsers.on("click", function() {
+		getUsers();
+	});
+
+	const socket = new WebSocket('ws://<?php echo $_SERVER['HTTP_HOST']; ?>:8080');
+
+	socket.onopen = function(event) {
 	    console.log('WebSocket connection established.');
 	};
 
-	socket.onmessage = (event) => {
+	socket.onmessage = function(event) {
 		getUsers();
-	    const message = JSON.parse(event.data);
-	    // console.log('Received message:', message);
-	    /*
-	    Issue on this code: The chat bubbles no longer adds on the other side even the receiver_user_id of of the sent websocket is the receiverUserId of the current chat
-	    if (message['type'] === 'chat_message' && message['receiver_user_id'] === receiverUserId) {
-	    	if (message['sender_user_id'] === senderUserId) {
-	    		chatContent.innerHTML += `
-					<div class="flex items-center text-white justify-end mt-3"><div class="bg-blue-500 px-3 py-2 rounded-2xl max-w-xs"><pre class=font-sans>${message['content']}</pre></div></div>`;
-				messageContent.value = "";
-	    	} else {
-	    		chatContent.innerHTML += `
-					<div class="flex items-center text-black justify-start mt-3"><div class="bg-white px-3 py-2 rounded-2xl max-w-xs"><pre class=font-sans>${message['content']}</pre></div></div>`;
-	    	}
-	    }
-	    */
-	    getMessages(receiverUserId); // This might fix the problem but updates the whole chat
-		scrollableChats.scrollTop = scrollableChats.scrollHeight;
+		// const message = JSON.parse(event.data);
+		getMessages(receiverUserId);
+		$scrollableChats.scrollTop($scrollableChats.prop("scrollHeight"));
 	};
 
-	socket.onerror = (error) => {
-	    swal("An error occured", "The webserver socket failed to connect.", "error");
+	socket.onerror = function(error) {
+		swal("An error occured", "The webserver socket failed to connect.", "error");
 	};
 
-	socket.onclose = (event) => {
-	    console.log('WebSocket connection closed.');
+	socket.onclose = function(event) {
+		console.log('WebSocket connection closed.');
 	};
 
-	sendMessage.onclick = () => {
-		if (messageContent.value.trim() === "") return;
+	$sendMessage.on("click", function() {
+		if ($messageContent.val().trim() === "") return;
 		const messageToSend = {
-		    type: 'chat_message',
-		    field1: "<?php echo $_COOKIE['wcipa-ai']; ?>",
-		    field2: "<?php echo $_COOKIE['wcipa-pw']; ?>",
-		    sender_user_id: senderUserId,
-		    receiver_user_id: receiverUserId,
-		    content: messageContent.value
+			type: 'chat_message',
+			field1: "<?php echo $_COOKIE['wcipa-ai']; ?>",
+			field2: "<?php echo $_COOKIE['wcipa-pw']; ?>",
+			sender_user_id: senderUserId,
+			receiver_user_id: receiverUserId,
+			content: $messageContent.val()
 		};
 		socket.send(JSON.stringify(messageToSend));
-		messageContent.value = null;
-    }
+		$messageContent.val('');
+	});
 
-    async function getMessages(receiverUserIdToSend) {
-    	history.pushState(null,null,'?id=' + receiverUserIdToSend);
-    	receiverUserId = receiverUserIdToSend;
-    	const responseheader = await fetch("../backend/getHeaderUserHTML.php?uid=" + receiverUserId);
-    	userHeader.innerHTML = await responseheader.text();
-    	const responsechat = await fetch("../backend/getReceiverChats.php?uid=" + receiverUserId);
-    	const textjson = await responsechat.text();
-    	const resultOfJson = JSON.parse(textjson);
-    	chatContent.innerHTML = '';
-	    const conversations = resultOfJson['conversation'];
-	    if (conversations.length > 0 && resultOfJson['success']) {
-	    	conversations.forEach(chat => {
-		        const messageElement = document.createElement('div');
-		        messageElement.classList.add('flex', 'mt-3');
-		        if (chat.sender_user_id === senderUserId) {
-		        	messageElement.classList.add('justify-end');
-		            messageElement.innerHTML = `<div class="bg-blue-500 text-white px-4 py-2 rounded-2xl max-w-xs">${chat.text_sent}</div>`;
-	            } else {
-	                messageElement.classList.add('justify-start');
-	                messageElement.innerHTML = `<div class="bg-gray-100 px-4 py-2 rounded-2xl max-w-xs">${chat.text_sent}</div>`;
-		        }
-		        chatContent.appendChild(messageElement);
-		    });
-	   	}
-		scrollableChats.scrollTop = scrollableChats.scrollHeight;
-    }
+	async function getMessages(receiverUserIdToSend) {
+		history.pushState(null, null, '?id=' + receiverUserIdToSend);
+		receiverUserId = receiverUserIdToSend;
+		$bottomTextBar.css("display", "flex");
+		$noUserSelMessage.hide();
+		const responseheader = await fetch("../backend/getHeaderUserHTML.php?uid=" + receiverUserId);
+		$userHeader.html(await responseheader.text());
+		const responsechat = await fetch("../backend/getReceiverChats.php?uid=" + receiverUserId);
+		const textjson = await responsechat.text();
+		const resultOfJson = JSON.parse(textjson);
+		$chatContent.html('');
+		const conversations = resultOfJson['conversation'];
+		if (conversations.length > 0 && resultOfJson['success']) {
+			conversations.forEach(chat => {
+				const messageElement = $('<div>').addClass('flex mt-3');
+				if (chat.sender_user_id === senderUserId) {
+					messageElement.addClass('justify-end');
+					messageElement.html(`<div class="bg-blue-500 text-white px-4 py-2 rounded-2xl max-w-xs">${chat.text_sent}</div>`);
+        		} else {
+        			messageElement.addClass('justify-start');
+        			messageElement.html(`<div class="bg-gray-100 px-4 py-2 rounded-2xl max-w-xs">${chat.text_sent}</div>`);
+				}
+				$chatContent.append(messageElement);
+			});
+		}
+		$scrollableChats.scrollTop($scrollableChats.prop("scrollHeight"));
+	}
 
-    messageContent.addEventListener("keydown", (event) => {
-        if (event.key === "Enter" && !event.shiftKey) {
-            event.preventDefault();
-            sendMessage.click();
-        }
-    });
+	$messageContent.on("keydown", function(event) {
+		if (event.key === "Enter" && !event.shiftKey) {
+	    	event.preventDefault();
+	    	$sendMessage.click();
+		}
+	});
 </script>
 
 <?php

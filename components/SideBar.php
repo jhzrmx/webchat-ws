@@ -21,7 +21,7 @@ function sideBar($display) {
 	            </div>
 	        </div>
 	    </div>
-		<?php
+<?php
 	} else {
 		?>
 		<div id="sideBarMobile" class="block md:hidden h-dvh w-full p-4 absolute top-0 left-0">
@@ -46,7 +46,7 @@ function sideBar($display) {
 	            </div>
 	        </div>
 	    </div>
-		<?php
+<?php
 	}
 }
 ?>

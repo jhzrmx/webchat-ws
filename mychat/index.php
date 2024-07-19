@@ -133,20 +133,6 @@ sideBar("mobile");
 		getUsers();
 		const message = JSON.parse(event.data);
 		// console.log(JSON.stringify(message));
-		/*
-	    Issue on this code: The chat bubbles no longer adds on the other side even the receiver_user_id of of the sent websocket is the receiverUserId of the current chat
-		if (message['type'] === 'chat_message' && message['receiver_user_id'] == receiverUserId) {
-	    	if (message['sender_user_id'] === senderUserId) {
-	    		chatContent.innerHTML += `
-					<div class="flex items-center text-white justify-end mt-3"><div class="bg-blue-500 px-3 py-2 rounded-2xl max-w-xs"><pre class=font-sans>${message['content']}</pre></div></div>`;
-				messageContent.value = "";
-	    	} else {
-	    		chatContent.innerHTML += `
-					<div class="flex items-center text-black justify-start mt-3"><div class="bg-white px-3 py-2 rounded-2xl max-w-xs"><pre class=font-sans>${message['content']}</pre></div></div>`;
-	    	}
-	    	$scrollableChats.scrollTop($scrollableChats.prop("scrollHeight"));
-	    }
-	    */
 	    if (message['type'] === 'chat_message') {
 	    	updateAllMessages(message['receiver_user_id']);
 	    }
@@ -190,44 +176,9 @@ sideBar("mobile");
 		$userHeader.html(await responseheader.text());
 	}
 
-	function timeSince(date) {
-    	const intervals = [
-    		{ label: "year", seconds: 31536000 },
-    		{ label: "month", seconds: 2592000 },
-    		{ label: "day", seconds: 86400 },
-    		{ label: "hour", seconds: 3600 },
-    		{ label: "minute", seconds: 60 },
-    	];
-    	const now = new Date();
-    	const seconds = Math.floor((now - date) / 1000);
-    	for (const interval of intervals) {
-    		const count = Math.floor(seconds / interval.seconds);
-    		if (count >= 1) {
-    			return `${count} ${interval.label}${count > 1 ? 's' : ''} ago`;
-    		}
-    	}
-    	return "just now";
-	}
-
 	async function updateAllMessages(receiverUserIdToSend) {
-		const responsechat = await fetch("../backend/getReceiverChats.php?uid=" + receiverUserId);
-		const textjson = await responsechat.text();
-		const resultOfJson = JSON.parse(textjson);
-		$chatContent.html('');
-		const conversations = resultOfJson['conversation'];
-		if (conversations.length > 0 && resultOfJson['success']) {
-			conversations.forEach(chat => {
-				const messageElement = $('<div>').addClass('flex mt-3');
-				if (chat.sender_user_id === senderUserId) {
-					messageElement.addClass('justify-end');
-					messageElement.html(`<div title="Sent ${timeSince(new Date(chat.sent_dt))}" class="bg-blue-500 text-white px-4 py-2 rounded-2xl max-w-xs whitespace-pre-wrap">${chat.text_sent}</div>`);
-        		} else {
-        			messageElement.addClass('justify-start');
-        			messageElement.html(`<div title="Sent ${timeSince(new Date(chat.sent_dt))}" class="bg-gray-100 px-4 py-2 rounded-2xl max-w-xs whitespace-pre-wrap">${chat.text_sent}</div>`);
-				}
-				$chatContent.append(messageElement);
-			});
-		}
+		const responsechat = await fetch("../backend/getReceiverChatsHTML.php?uid=" + receiverUserId);
+		$chatContent.html(await responsechat.text());
 		$scrollableChats.scrollTop($scrollableChats.prop("scrollHeight"));
 	}
 

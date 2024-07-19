@@ -14,6 +14,6 @@ function cardMessageList($fullname, $userId, $lastMessage) {
 			</div>
 		</button>
 	</li>
-	<?php
+<?php
 }
 ?>

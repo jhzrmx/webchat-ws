@@ -116,6 +116,21 @@ sideBar("mobile");
 
 	clickToShowHide("#openSideBarMobile, #closeSideBarMobile", "#sideBarMobile");
 
+	$('#search, #searchMobile').on('input', function() {
+		if (this.id === 'search') {
+			$('#searchMobile').val($(this).val());
+		} else {
+			$('#search').val($(this).val());
+		}
+	});
+
+	$('#search, #searchMobile').on("keydown", function(event) {
+		if (event.key === "Enter") {
+	    	event.preventDefault();
+	    	// Search a user
+		}
+	});
+
 	async function getUsers() {
 		try {
 			const response = await fetch("../backend/getUsersHTML.php");

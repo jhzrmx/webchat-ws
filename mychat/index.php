@@ -123,6 +123,7 @@ sideBar("mobile");
 
 	socket.onopen = function(event) {
 	    console.log('WebSocket connection established.');
+	    // TODO: User logged in to the same account on different device have issues in receiving a message due to user_id is used in clientId
 	    socket.send(JSON.stringify({
             type: 'logged_in',
             user_id: '<?php echo $_COOKIE['wcipa-ui']; ?>'

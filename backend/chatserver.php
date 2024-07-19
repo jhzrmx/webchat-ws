@@ -38,6 +38,7 @@ class ChatServer implements MessageComponentInterface {
                 $this->sendChatMessage($from, $messageData);
                 break;
             case 'logged_in':
+                // TODO: User logged in to the same account on different device have issues in receiving a message due to user_id is used in clientId
                 $this->clientIds[$messageData['user_id']] = $from;
                 break;
             // Handle other message types as needed

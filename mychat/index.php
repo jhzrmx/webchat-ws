@@ -139,10 +139,12 @@ sideBar("mobile");
 	    		chatContent.innerHTML += `
 					<div class="flex items-center text-black justify-start mt-3"><div class="bg-white px-3 py-2 rounded-2xl max-w-xs"><pre class=font-sans>${message['content']}</pre></div></div>`;
 	    	}
+	    	$scrollableChats.scrollTop($scrollableChats.prop("scrollHeight"));
 	    }
 	    */
-	    updateAllMessages(message['receiver_user_id']);
-		$scrollableChats.scrollTop($scrollableChats.prop("scrollHeight"));
+	    if (message['type'] === 'chat_message') {
+	    	updateAllMessages(message['receiver_user_id']);
+	    }
 	};
 
 	socket.onerror = function(error) {

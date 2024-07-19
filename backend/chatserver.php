@@ -37,7 +37,7 @@ class ChatServer implements MessageComponentInterface {
             case 'chat_message':
                 $this->sendChatMessage($from, $messageData);
                 break;
-            case 'register':
+            case 'logged_in':
                 $this->clientIds[$messageData['user_id']] = $from;
                 break;
             // Handle other message types as needed
@@ -82,11 +82,11 @@ class ChatServer implements MessageComponentInterface {
         $stmt = $this->database->prepare("INSERT INTO chats (chat_id, text_sent, sender_user_id, receiver_user_id, sent_dt) VALUES (?, ?, ?, ?, NOW())");
         $stmt->execute([$randomChatId, $messageContent, $senderUserId, $receiverUserId]);
 
-        $this->informBothSenderReceiver($senderUserId, $messageContent, $senderUserId, $receiverUserId);
-        $this->informBothSenderReceiver($receiverUserId, $messageContent, $senderUserId, $receiverUserId);
+        $this->informUser($senderUserId, $messageContent, $senderUserId, $receiverUserId);
+        $this->informUser($receiverUserId, $messageContent, $senderUserId, $receiverUserId);
     }
 
-    protected function informBothSenderReceiver($userId, $messageContent, $senderUserId, $receiverUserId) {
+    protected function informUser($userId, $messageContent, $senderUserId, $receiverUserId) {
         if (isset($this->clientIds[$userId])) {
             $this->clientIds[$userId]->send(json_encode([
                 'type' => 'chat_message',

@@ -8,7 +8,7 @@ require '../components/SideBar.php';
 require '../components/MessageList.php';
 
 $html = new HTML("WebChat - My Chats");
-$html->addLink('icon', 'https://static.xx.fbcdn.net/rsrc.php/yb/r/hLRJ1GG_y0J.ico');
+$html->addLink('icon', '../img/icons/favicon.png');
 $html->addScript("../js/tailwind3.4.5.js");
 $html->addScript("../js/jquery-3.7.1.min.js");
 $html->addScript("../js/sweetalert.min.js");

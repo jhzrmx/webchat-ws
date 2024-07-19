@@ -123,11 +123,16 @@ sideBar("mobile");
 
 	socket.onopen = function(event) {
 	    console.log('WebSocket connection established.');
+	    socket.send(JSON.stringify({
+            type: 'register',
+            user_id: '<?php echo $_COOKIE['wcipa-ui']; ?>'
+        }));
 	};
 
 	socket.onmessage = function(event) {
 		getUsers();
 		const message = JSON.parse(event.data);
+		console.log(JSON.stringify(message));
 		/*
 	    Issue on this code: The chat bubbles no longer adds on the other side even the receiver_user_id of of the sent websocket is the receiverUserId of the current chat
 		if (message['type'] === 'chat_message' && message['receiver_user_id'] == receiverUserId) {

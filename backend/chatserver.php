@@ -10,10 +10,12 @@ use Ratchet\WebSocket\WsServer;
 
 class ChatServer implements MessageComponentInterface {
     protected $clients;
+    protected $clientIds;
     protected $database;
 
     public function __construct() {
         $this->clients = new \SplObjectStorage;
+        $this->clientIds = [];
         $host = 'localhost';
         $dbname = 'webchat_ws';
         $username = 'root';
@@ -24,6 +26,7 @@ class ChatServer implements MessageComponentInterface {
 
     public function onOpen(ConnectionInterface $conn) {
         $this->clients->attach($conn);
+        $this->clientIds[$conn->resourceId] = $conn;
         echo "New connection! ({$conn->resourceId})\n";
     }
 
@@ -33,6 +36,9 @@ class ChatServer implements MessageComponentInterface {
         switch ($messageData['type']) {
             case 'chat_message':
                 $this->sendChatMessage($from, $messageData);
+                break;
+            case 'register':
+                $this->clientIds[$messageData['user_id']] = $from;
                 break;
             // Handle other message types as needed
         }
@@ -76,8 +82,13 @@ class ChatServer implements MessageComponentInterface {
         $stmt = $this->database->prepare("INSERT INTO chats (chat_id, text_sent, sender_user_id, receiver_user_id, sent_dt) VALUES (?, ?, ?, ?, NOW())");
         $stmt->execute([$randomChatId, $messageContent, $senderUserId, $receiverUserId]);
 
-        foreach ($this->clients as $client) {
-            $client->send(json_encode([
+        $this->informBothSenderReceiver($senderUserId, $messageContent, $senderUserId, $receiverUserId);
+        $this->informBothSenderReceiver($receiverUserId, $messageContent, $senderUserId, $receiverUserId);
+    }
+
+    protected function informBothSenderReceiver($userId, $messageContent, $senderUserId, $receiverUserId) {
+        if (isset($this->clientIds[$userId])) {
+            $this->clientIds[$userId]->send(json_encode([
                 'type' => 'chat_message',
                 'content' => $messageContent,
                 'sender_user_id' => $senderUserId,
@@ -88,8 +99,11 @@ class ChatServer implements MessageComponentInterface {
     }
 
     public function onClose(ConnectionInterface $conn) {
-        // Remove the connection when closed
         $this->clients->detach($conn);
+        $key = array_search($conn, $this->clientIds);
+        if ($key !== false) {
+            unset($this->clientIds[$key]);
+        }
         echo "Connection {$conn->resourceId} has disconnected\n";
     }
 

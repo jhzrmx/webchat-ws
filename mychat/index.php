@@ -25,6 +25,18 @@ if (!verifyLogin($pdo)) {
 	swalThen("Please login again.", "", "info", "() => window.location.href = '../'");
 }
 
+if (isset($_GET['id'])) {
+    $stmt = $pdo->prepare(" SELECT `full_name` FROM users WHERE `user_id` = :retrieved_user_id; ");
+	$stmt->bindParam(':retrieved_user_id', $_GET['id']);
+	$stmt->execute();
+	$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	if (count($rows) == 0) {
+		swalThen("Error", "The user you are trying to reach does not exist.", "error", "() => window.location.href = '../'");
+		$html->endBody();
+		exit();
+	}
+}
+
 sideBar("mobile");
 
 ?>

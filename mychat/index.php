@@ -72,6 +72,7 @@ sideBar("mobile");
 	const $usersFriendsList = $("#usersFriendsList, #usersFriendsListMobile");
 	const $sideBarMobile = $("#sideBarMobile");
 	const $toggleSideBarMobile = $("#toggleSideBarMobile");
+	const $btnLogout = $("#logout, #logoutMobile");
 	const $userHeader = $("#userHeader");
 	const $scrollableChats = $("#scrollableChats");
 	const $chatContent = $("#chatContent");
@@ -136,6 +137,7 @@ sideBar("mobile");
 		// console.log(JSON.stringify(message));
 	    if (message['type'] === 'chat_message') {
 	    	updateAllMessages(message['receiver_user_id']);
+	    	$messageContent.attr("placeholder", "Type your message...");
 	    }
 	};
 
@@ -146,6 +148,24 @@ sideBar("mobile");
 	socket.onclose = function(event) {
 		console.log('WebSocket connection closed.');
 	};
+
+	$btnLogout.on("click", () => {
+		swal({
+            title: "Are you sure to logout?",
+            text: "You can log into your account at anytime.",
+            icon: "info",
+            buttons: true,
+            buttons: {
+                cancel: 'No',
+                confirm : {text: "Yes", className:'bg-blue-500'},
+            },
+            dangerMode: false,
+        }).then((willLogout) => {
+            if (willLogout) {
+                window.location.href = "../logout.php";
+            }
+        });
+	});
 
 	$sendMessage.on("click", () => {
 		if ($messageContent.val().trim() === "") return;
@@ -158,6 +178,7 @@ sideBar("mobile");
 			content: $messageContent.val()
 		};
 		socket.send(JSON.stringify(messageToSend));
+		$messageContent.attr("placeholder", "Sending...");
 		$messageContent.val('');
 	});
 

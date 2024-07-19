@@ -3,7 +3,7 @@ require 'connection.php';
 require 'verifyLogin.php';
 
 if (!verifyLogin($pdo)) {
-	echo "No Users found";
+	echo json_encode(['success' => false]);
 	exit();
 }
 

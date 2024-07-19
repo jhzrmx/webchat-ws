@@ -1,7 +1,6 @@
 <?php 
 require 'connection.php';
 require 'verifyLogin.php';
-require '../components/HeaderUser.php';
 
 header('Content-Type: application/json');
 

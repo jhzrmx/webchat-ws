@@ -47,7 +47,7 @@ if ($search !== "") {
     $sql .= " AND users.full_name LIKE :search";
 }
 
-$sql .= " ORDER BY last_message.sent_dt DESC;";
+$sql .= " ORDER BY last_message.sent_dt DESC LIMIT 50;";
 
 $stmt = $pdo->prepare($sql);
 $stmt->bindParam(':current_user_id', $_COOKIE['wcipa-ui'], PDO::PARAM_STR);

@@ -116,35 +116,38 @@ sideBar("mobile");
 
 	clickToShowHide("#openSideBarMobile, #closeSideBarMobile", "#sideBarMobile");
 
-	$('#search, #searchMobile').on('input', function() {
-		if (this.id === 'search') {
-			$('#searchMobile').val($(this).val());
-		} else {
-			$('#search').val($(this).val());
-		}
-	});
+	function debounce(func, timeout = 500){
+		let timer;
+		return (...args) => {
+			clearTimeout(timer);
+			timer = setTimeout(() => { func.apply(this, args); }, timeout);
+		};
+	}
 
-	$('#search, #searchMobile').on("keydown", function(event) {
-		if (event.key === "Enter") {
-	    	event.preventDefault();
-	    	// Search a user
-		}
-	});
-
-	async function getUsers() {
+	async function getUsers(search) {
 		try {
-			const response = await fetch("../backend/getUsersHTML.php");
+			const url = search.length > 0 
+			? `../backend/getUsersHTML.php?uid=${encodeURIComponent(search)}` 
+			: "../backend/getUsersHTML.php";
+			const response = await fetch(url);
 			$usersFriendsList.html(await response.text());
 		} catch (error) {
 			$usersFriendsList.html('<p class="text-center"><br>Unable to display all users.</p>');
 		}
 	}
 
-	getUsers();
+	const debouncedGetUsers = debounce(getUsers);
+	$('#search, #searchMobile').on('input', function() {
+		const searchValue = $(this).val();
+		$('#search, #searchMobile').val(searchValue);
+		debouncedGetUsers(searchValue);
+	});
+
+	getUsers("");
 	$scrollableChats.scrollTop($scrollableChats.prop("scrollHeight"));
 
 	$btnGetUsers.on("click", function() {
-		getUsers();
+		getUsers("");
 	});
 
 	const socket = new WebSocket('ws://<?php echo $_SERVER['HTTP_HOST']; ?>:8080');
@@ -159,7 +162,7 @@ sideBar("mobile");
 	};
 
 	socket.onmessage = function(event) {
-		getUsers();
+		getUsers("");
 		const message = JSON.parse(event.data);
 		// console.log(JSON.stringify(message));
 	    if (message['type'] === 'chat_message') {

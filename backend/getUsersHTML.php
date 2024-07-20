@@ -8,7 +8,9 @@ if (!verifyLogin($pdo)) {
 	exit();
 }
 
-$stmt = $pdo->prepare("
+$search = isset($_GET['uid']) ? $_GET['uid'] : "";
+
+$sql = "
 	SELECT 
 	    users.user_id, 
 	    users.full_name, 
@@ -40,12 +42,22 @@ $stmt = $pdo->prepare("
 	    users.user_id = last_message.user_id
 	WHERE
 		users.user_id != :current_user_id
-	ORDER BY 
-	    last_message.sent_dt
-	DESC;
-");
+";
 
-$stmt->bindParam(':current_user_id', $_COOKIE['wcipa-ui']);
+if ($search !== "") {
+    $sql .= " AND users.full_name LIKE :search";
+}
+
+$sql .= " ORDER BY last_message.sent_dt DESC;";
+
+$stmt = $pdo->prepare($sql);
+$stmt->bindParam(':current_user_id', $_COOKIE['wcipa-ui'], PDO::PARAM_STR);
+
+if ($search !== "") {
+    $searchTerm = '%' . $search . '%';
+    $stmt->bindParam(':search', $searchTerm, PDO::PARAM_STR);
+}
+
 $stmt->execute();
 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 

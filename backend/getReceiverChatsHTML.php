@@ -17,7 +17,7 @@ $stmt = $pdo->prepare("
     SELECT * FROM chats 
     WHERE (sender_user_id = :sender_user_id AND receiver_user_id = :receiver_user_id) 
        OR (sender_user_id = :receiver_user_id AND receiver_user_id = :sender_user_id) 
-    ORDER BY sent_dt 
+    ORDER BY sent_dt DESC
     LIMIT 30
 ");
 $stmt->execute([
@@ -44,6 +44,8 @@ function timeSince($date) {
     }
     return "just now";
 }
+
+$messages = array_reverse($messages);
 
 if (count($messages) > 0) {
     foreach ($messages as $message) {

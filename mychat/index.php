@@ -229,7 +229,13 @@ sideBar("mobile");
 	async function updateUserHeader(receiverUserIdToSend) {
 		try {
 			const responseheader = await fetch("../backend/getHeaderUserHTML.php?uid=" + receiverUserId);
+			const userDetails = await fetch("../backend/getHeaderUser.php?uid=" + receiverUserId);
 			$userHeader.html(await responseheader.text());
+			const userDetailsText = await userDetails.text();
+			const resultOfJson = JSON.parse(userDetailsText);
+			if (resultOfJson['success']) {
+				$(document).attr("title", "WebChat - " + resultOfJson.header[0].full_name);
+			}
 		} catch (error) {
 			swal("Error", "An error occured while fetching user header: " + error, "error");
 		}

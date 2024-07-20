@@ -80,7 +80,7 @@ sideBar("mobile");
 <script type="text/javascript">
 	const senderUserId = "<?php echo $_COOKIE['wcipa-ui']; ?>";
 	var receiverUserId = "<?php echo isset($_GET['id']) ? $_GET['id'] : ''; ?>";
-	const $btnGetUsers = $("#getUsers, #getUsersMobile");
+	// const $btnGetUsers = $("#getUsers, #getUsersMobile");
 	const $usersFriendsList = $("#usersFriendsList, #usersFriendsListMobile");
 	const $sideBarMobile = $("#sideBarMobile");
 	const $toggleSideBarMobile = $("#toggleSideBarMobile");
@@ -147,9 +147,11 @@ sideBar("mobile");
 	getUsers(searchValue);
 	$scrollableChats.scrollTop($scrollableChats.prop("scrollHeight"));
 
+	/*
 	$btnGetUsers.on("click", function() {
 		getUsers(searchValue);
 	});
+	*/
 
 	const socket = new WebSocket('ws://<?php echo $_SERVER['HTTP_HOST']; ?>:8080');
 

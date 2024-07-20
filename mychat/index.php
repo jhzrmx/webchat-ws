@@ -92,6 +92,7 @@ sideBar("mobile");
 	const $messageContent = $("#messageContent");
 	const $sendMessage = $("#sendMessage");
 	const $noUserSelMessage = $("#noUserSelMessage");
+	var searchValue = "";
 	var isSideBarMobileOpened = false;
 
 	$usersFriendsList.html('<p class="text-center"><br>Getting list of users...</p>');
@@ -127,7 +128,7 @@ sideBar("mobile");
 	async function getUsers(search) {
 		try {
 			const url = search.length > 0 
-			? `../backend/getUsersHTML.php?uid=${encodeURIComponent(search)}` 
+			? `../backend/getUsersHTML.php?search=${encodeURIComponent(search)}` 
 			: "../backend/getUsersHTML.php";
 			const response = await fetch(url);
 			$usersFriendsList.html(await response.text());
@@ -138,16 +139,16 @@ sideBar("mobile");
 
 	const debouncedGetUsers = debounce(getUsers);
 	$('#search, #searchMobile').on('input', function() {
-		const searchValue = $(this).val();
+		searchValue = $(this).val();
 		$('#search, #searchMobile').val(searchValue);
 		debouncedGetUsers(searchValue);
 	});
 
-	getUsers("");
+	getUsers(searchValue);
 	$scrollableChats.scrollTop($scrollableChats.prop("scrollHeight"));
 
 	$btnGetUsers.on("click", function() {
-		getUsers("");
+		getUsers(searchValue);
 	});
 
 	const socket = new WebSocket('ws://<?php echo $_SERVER['HTTP_HOST']; ?>:8080');
@@ -162,7 +163,7 @@ sideBar("mobile");
 	};
 
 	socket.onmessage = function(event) {
-		getUsers("");
+		getUsers(searchValue);
 		const message = JSON.parse(event.data);
 		// console.log(JSON.stringify(message));
 	    if (message['type'] === 'chat_message') {

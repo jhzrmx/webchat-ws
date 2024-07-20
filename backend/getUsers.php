@@ -7,7 +7,7 @@ if (!verifyLogin($pdo)) {
 	exit();
 }
 
-$search = isset($_GET['uid']) ? $_GET['uid'] : "";
+$search = isset($_GET['search']) ? $_GET['search'] : "";
 
 $sql = "
 	SELECT 

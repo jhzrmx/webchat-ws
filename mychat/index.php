@@ -132,7 +132,7 @@ sideBar("mobile");
 			const response = await fetch(url);
 			$usersFriendsList.html(await response.text());
 		} catch (error) {
-			$usersFriendsList.html('<p class="text-center"><br>Unable to display all users.</p>');
+			$usersFriendsList.html('<p class="text-center"><br>Unable to display users.</p>');
 		}
 	}
 
@@ -181,7 +181,7 @@ sideBar("mobile");
 
 	$btnLogout.on("click", () => {
 		swal({
-            title: "Are you sure to logout?",
+            title: "Logout?",
             text: "You can log into your account at anytime.",
             icon: "info",
             buttons: true,

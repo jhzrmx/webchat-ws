@@ -169,7 +169,11 @@ sideBar("mobile");
 		const message = JSON.parse(event.data);
 		// console.log(JSON.stringify(message));
 	    if (message['type'] === 'chat_message') {
-	    	updateAllMessages(message['receiver_user_id']);
+	    	if (message['receiver_user_id'] === receiverUserId && message['sender_user_id'] === senderUserId) {
+	    		updateAllMessages(message['receiver_user_id']);
+	    	} else if (message['sender_user_id'] === receiverUserId && message['receiver_user_id'] === senderUserId) {
+	    		updateAllMessages(message['sender_user_id']);
+	    	}
 	    	$messageContent.attr("placeholder", "Type your message...");
 	    }
 	};

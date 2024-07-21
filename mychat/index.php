@@ -98,7 +98,7 @@ sideBar("mobile");
 	$usersFriendsList.html('<p class="text-center"><br>Getting list of users...</p>');
 	$sideBarMobile.hide();
 
-    if (receiverUserId) {
+    if (receiverUserId === "") {
     	$bottomTextBar.hide();
     }
 

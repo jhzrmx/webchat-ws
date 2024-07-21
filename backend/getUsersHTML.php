@@ -10,6 +10,8 @@ if (!verifyLogin($pdo)) {
 
 $search = isset($_GET['search']) ? $_GET['search'] : "";
 
+echo !empty($search) ? "<p class=\"w-full pl-2 pb-2\">Search Result:</p>" : "";
+
 $sql = "
 	SELECT 
 	    users.user_id, 

@@ -98,7 +98,7 @@ sideBar("mobile");
 	$usersFriendsList.html('<p class="text-center"><br>Getting list of users...</p>');
 	$sideBarMobile.hide();
 
-    if (receiverUserId.length === 0) {
+    if (receiverUserId) {
     	$bottomTextBar.hide();
     }
 
@@ -215,6 +215,14 @@ sideBar("mobile");
 		$messageContent.val('');
 	});
 
+	window.addEventListener('popstate', function(event) {
+		const urlParams = new URLSearchParams(window.location.search);
+		receiverUserId = urlParams.get('id');
+		if (receiverUserId) {
+			getMessages(receiverUserId);
+		}
+	});
+
 	async function getMessages(receiverUserIdToSend) {
 		history.pushState(null, null, '?id=' + receiverUserIdToSend);
 		receiverUserId = receiverUserIdToSend;
@@ -228,8 +236,8 @@ sideBar("mobile");
 
 	async function updateUserHeader(receiverUserIdToSend) {
 		try {
-			const responseheader = await fetch("../backend/getHeaderUserHTML.php?uid=" + receiverUserId);
-			const userDetails = await fetch("../backend/getHeaderUser.php?uid=" + receiverUserId);
+			const responseheader = await fetch("../backend/getHeaderUserHTML.php?uid=" + receiverUserIdToSend);
+			const userDetails = await fetch("../backend/getHeaderUser.php?uid=" + receiverUserIdToSend);
 			$userHeader.html(await responseheader.text());
 			const userDetailsText = await userDetails.text();
 			const resultOfJson = JSON.parse(userDetailsText);
@@ -243,7 +251,7 @@ sideBar("mobile");
 
 	async function updateAllMessages(receiverUserIdToSend) {
 		try {
-			const responsechat = await fetch("../backend/getReceiverChatsHTML.php?uid=" + receiverUserId);
+			const responsechat = await fetch("../backend/getReceiverChatsHTML.php?uid=" + receiverUserIdToSend);
 			$chatContent.html(await responsechat.text());
 		} catch (error) {
 			swal("Error", "An error occured while fetching messages: " + error, "error");

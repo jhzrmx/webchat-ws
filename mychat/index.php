@@ -65,7 +65,7 @@ sideBar("mobile");
             </div>
             <!-- Textarea and send button (Bottom) -->
             <div id="bottomTextBar" class="flex mt-4">
-                <textarea id="messageContent" class="w-full rounded-3xl h-11 px-4 py-2 border-2 border-gray-300 focus:outline-none focus:border-blue-500 resize-none" rows="2" placeholder="Type your message..."></textarea>
+                <textarea id="messageContent" class="w-full rounded-3xl h-11 px-4 py-2 border-2 border-gray-300 focus:outline-none focus:border-blue-500 resize-none" rows="2" maxlength="2048" placeholder="Type your message..."></textarea>
                 <button id="sendMessage" class="ml-2 px-4 py-2 bg-blue-500 text-white rounded-3xl hover:bg-blue-600 focus:outline-none">Send</button>
             </div>
             <div id="noUserSelMessage" class="flex w-full h-full">
@@ -208,7 +208,7 @@ sideBar("mobile");
 			field2: "<?php echo $_COOKIE['wcipa-pw']; ?>",
 			sender_user_id: senderUserId,
 			receiver_user_id: receiverUserId,
-			content: $messageContent.val()
+			content: $messageContent.val().trim()
 		};
 		socket.send(JSON.stringify(messageToSend));
 		$messageContent.attr("placeholder", "Sending...");

@@ -162,8 +162,14 @@ sideBar("mobile");
 	    if (message['type'] === 'chat_message') {
 	    	if (message['receiver_user_id'] === receiverUserId) {
 	    		updateAllMessages(message['receiver_user_id']);
+	    		console.log("I send the message here.");
 	    	} else if (message['sender_user_id'] === receiverUserId) {
 	    		updateAllMessages(message['sender_user_id']);
+	    		console.log("I received the message from the current selected user.");
+	    		playMessageSound();
+	    	} else {
+	    		console.log("I also received the message but not from the selected user".);
+	    		playMessageSound();
 	    	}
 	    	$messageContent.attr("placeholder", "Type your message...");
 	    }
@@ -252,6 +258,10 @@ sideBar("mobile");
 			swal("Error", "An error occured while fetching messages: " + error, "error");
 		}
 		$scrollableChats.scrollTop($scrollableChats.prop("scrollHeight"));
+	}
+
+	function playMessageSound() {
+		// Play message sound here
 	}
 
 	$messageContent.on("keydown", function(event) {

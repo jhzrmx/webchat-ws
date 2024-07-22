@@ -155,25 +155,43 @@ sideBar("mobile");
         }));
 	};
 
-	socket.onmessage = function(event) {
-		getUsers(searchValue);
-		const message = JSON.parse(event.data);
-		// console.log(JSON.stringify(message));
-	    if (message['type'] === 'chat_message') {
-	    	if (message['receiver_user_id'] === receiverUserId) {
-	    		updateAllMessages(message['receiver_user_id']);
-	    		console.log("I send the message here.");
-	    	} else if (message['sender_user_id'] === receiverUserId) {
-	    		updateAllMessages(message['sender_user_id']);
-	    		console.log("I received the message from the current selected user.");
-	    		playMessageSound();
-	    	} else {
-	    		console.log("I also received the message but not from the selected user".);
-	    		playMessageSound();
-	    	}
-	    	$messageContent.attr("placeholder", "Type your message...");
-	    }
-	};
+	function playMessageSound() {
+		const messageTone = new Audio("../audio/message.aac");
+		messageTone.play();
+	}
+
+	function enableAudioPlayback() {
+	    const silentAudio = new Audio("../audio/message.aac");
+	    silentAudio.muted = true;
+	    silentAudio.play().then(() => {
+	        silentAudio.muted = false;
+	        socket.onmessage = function(event) {
+	            getUsers(searchValue);
+	            const message = JSON.parse(event.data);
+	            // console.log(JSON.stringify(message));
+	            if (message['type'] === 'chat_message') {
+	                if (message['receiver_user_id'] === receiverUserId) {
+	                    updateAllMessages(message['receiver_user_id']);
+	                    console.log("I send the message here.");
+	                } else if (message['sender_user_id'] === receiverUserId) {
+	                    updateAllMessages(message['sender_user_id']);
+	                    console.log("I received the message from the current selected user.");
+	                    playMessageSound();
+	                } else {
+	                    console.log("I also received the message but not from the selected user.");
+	                    playMessageSound();
+	                }
+	                $messageContent.attr("placeholder", "Type your message...");
+	            }
+	        };
+	    });
+	}
+
+	document.addEventListener('DOMContentLoaded', (event) => {
+	    document.body.addEventListener('click', () => {
+	        enableAudioPlayback();
+	    }, { once: true });
+	});
 
 	socket.onerror = function(error) {
 		swal("An error occured", "The webserver socket failed to connect.", "error");
@@ -258,10 +276,6 @@ sideBar("mobile");
 			swal("Error", "An error occured while fetching messages: " + error, "error");
 		}
 		$scrollableChats.scrollTop($scrollableChats.prop("scrollHeight"));
-	}
-
-	function playMessageSound() {
-		// Play message sound here
 	}
 
 	$messageContent.on("keydown", function(event) {

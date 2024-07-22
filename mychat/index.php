@@ -80,29 +80,20 @@ sideBar("mobile");
 <script type="text/javascript">
 	const senderUserId = "<?php echo $_COOKIE['wcipa-ui']; ?>";
 	var receiverUserId = "<?php echo isset($_GET['id']) ? $_GET['id'] : ''; ?>";
-	// const $btnGetUsers = $("#getUsers, #getUsersMobile");
 	const $usersFriendsList = $("#usersFriendsList, #usersFriendsListMobile");
-	const $sideBarMobile = $("#sideBarMobile");
-	const $toggleSideBarMobile = $("#toggleSideBarMobile");
-	const $btnLogout = $("#logout, #logoutMobile");
-	const $userHeader = $("#userHeader");
 	const $scrollableChats = $("#scrollableChats");
-	const $chatContent = $("#chatContent");
-	const $bottomTextBar = $("#bottomTextBar");
 	const $messageContent = $("#messageContent");
-	const $sendMessage = $("#sendMessage");
-	const $noUserSelMessage = $("#noUserSelMessage");
 	var searchValue = "";
 	var isSideBarMobileOpened = false;
 
 	$usersFriendsList.html('<p class="text-center"><br>Getting list of users...</p>');
-	$sideBarMobile.hide();
+	$("#sideBarMobile").hide();
 
     if (receiverUserId === "") {
-    	$bottomTextBar.hide();
+    	$("#bottomTextBar").hide();
     }
 
-	function clickToShowHide(button_id, target_show_hide) {
+	function clickToShowHideSideBar(button_id, target_show_hide) {
 	    const target = $(target_show_hide);
 	    target.hide();
 	    $(button_id).click((e) => {
@@ -115,7 +106,7 @@ sideBar("mobile");
 	    });
 	}
 
-	clickToShowHide("#openSideBarMobile, #closeSideBarMobile", "#sideBarMobile");
+	clickToShowHideSideBar("#openSideBarMobile, #closeSideBarMobile", "#sideBarMobile");
 
 	function debounce(func, timeout = 500){
 		let timer;
@@ -148,7 +139,7 @@ sideBar("mobile");
 	$scrollableChats.scrollTop($scrollableChats.prop("scrollHeight"));
 
 	/*
-	$btnGetUsers.on("click", function() {
+	$("#getUsers, #getUsersMobile").on("click", function() {
 		getUsers(searchValue);
 	});
 	*/
@@ -186,7 +177,7 @@ sideBar("mobile");
 		console.log('WebSocket connection closed.');
 	};
 
-	$btnLogout.on("click", () => {
+	$("#logout, #logoutMobile").on("click", () => {
 		swal({
             title: "Logout?",
             text: "You can log into your account at anytime.",
@@ -204,7 +195,7 @@ sideBar("mobile");
         });
 	});
 
-	$sendMessage.on("click", () => {
+	$("#sendMessage").on("click", () => {
 		if ($messageContent.val().trim() === "") return;
 		const messageToSend = {
 			type: 'chat_message',
@@ -230,10 +221,10 @@ sideBar("mobile");
 	async function getMessages(receiverUserIdToSend) {
 		history.pushState(null, null, '?id=' + receiverUserIdToSend);
 		receiverUserId = receiverUserIdToSend;
-		$bottomTextBar.css("display", "flex");
+		$("#bottomTextBar").css("display", "flex");
 		$("#sideBarMobile").hide();
 		isSideBarMobileOpened = false;
-		$noUserSelMessage.hide();
+		$("#noUserSelMessage").hide();
 		await updateUserHeader(receiverUserIdToSend);
 		await updateAllMessages(receiverUserIdToSend);
 	}
@@ -242,7 +233,7 @@ sideBar("mobile");
 		try {
 			const responseheader = await fetch("../backend/getHeaderUserHTML.php?uid=" + receiverUserIdToSend);
 			const userDetails = await fetch("../backend/getHeaderUser.php?uid=" + receiverUserIdToSend);
-			$userHeader.html(await responseheader.text());
+			$("#userHeader").html(await responseheader.text());
 			const userDetailsText = await userDetails.text();
 			const resultOfJson = JSON.parse(userDetailsText);
 			if (resultOfJson['success']) {
@@ -256,7 +247,7 @@ sideBar("mobile");
 	async function updateAllMessages(receiverUserIdToSend) {
 		try {
 			const responsechat = await fetch("../backend/getReceiverChatsHTML.php?uid=" + receiverUserIdToSend);
-			$chatContent.html(await responsechat.text());
+			$("#chatContent").html(await responsechat.text());
 		} catch (error) {
 			swal("Error", "An error occured while fetching messages: " + error, "error");
 		}
@@ -266,7 +257,7 @@ sideBar("mobile");
 	$messageContent.on("keydown", function(event) {
 		if (event.key === "Enter" && !event.shiftKey) {
 	    	event.preventDefault();
-	    	$sendMessage.click();
+	    	$("#sendMessage").click();
 		}
 	});
 </script>

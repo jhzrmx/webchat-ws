@@ -138,12 +138,6 @@ sideBar("mobile");
 	getUsers(searchValue);
 	$scrollableChats.scrollTop($scrollableChats.prop("scrollHeight"));
 
-	/*
-	$("#getUsers, #getUsersMobile").on("click", function() {
-		getUsers(searchValue);
-	});
-	*/
-
 	function playMessageSound() {
 		const messageTone = new Audio("../audio/message.aac");
 		messageTone.play();

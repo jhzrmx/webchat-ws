@@ -79,15 +79,16 @@ sideBar("mobile");
 
 <script type="text/javascript">
 	const senderUserId = "<?php echo $_COOKIE['wcipa-ui']; ?>";
+	const senderAccId = "<?php echo $_COOKIE['wcipa-ai']; ?>";
+	const senderHP = "<?php echo $_COOKIE['wcipa-pw']; ?>";
 	var receiverUserId = "<?php echo isset($_GET['id']) ? $_GET['id'] : ''; ?>";
 	const $usersFriendsList = $("#usersFriendsList, #usersFriendsListMobile");
 	const $scrollableChats = $("#scrollableChats");
 	const $messageContent = $("#messageContent");
 	var searchValue = "";
-	var isSideBarMobileOpened = false;
+	var isSideBarMobileOpened = true;
 
 	$usersFriendsList.html('<p class="text-center"><br>Getting list of users...</p>');
-	$("#sideBarMobile").hide();
 
     if (receiverUserId === "") {
     	$("#bottomTextBar").hide();
@@ -95,7 +96,6 @@ sideBar("mobile");
 
 	function clickToShowHideSideBar(button_id, target_show_hide) {
 	    const target = $(target_show_hide);
-	    target.hide();
 	    $(button_id).click((e) => {
 	        if (isSideBarMobileOpened) {
 	            target.fadeOut();
@@ -156,7 +156,7 @@ sideBar("mobile");
 	    // TODO: User logged in to the same account on different device have issues in receiving a message due to user_id is used in clientId
 	    socket.send(JSON.stringify({
             type: 'logged_in',
-            user_id: '<?php echo $_COOKIE['wcipa-ui']; ?>'
+            user_id: senderUserId
         }));
 	};
 
@@ -210,8 +210,8 @@ sideBar("mobile");
 		if ($messageContent.val().trim() === "") return;
 		const messageToSend = {
 			type: 'chat_message',
-			field1: "<?php echo $_COOKIE['wcipa-ai']; ?>",
-			field2: "<?php echo $_COOKIE['wcipa-pw']; ?>",
+			field1: senderAccId,
+			field2: senderHP,
 			sender_user_id: senderUserId,
 			receiver_user_id: receiverUserId,
 			content: $messageContent.val().trim()

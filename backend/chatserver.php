@@ -56,7 +56,6 @@ class ChatServer implements MessageComponentInterface {
                     if ($messageData['field2'] === $row['password']) {
                         return true;
                     } else {
-                        echo "Here";
                         return false;
                     }
                     break;

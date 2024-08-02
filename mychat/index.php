@@ -175,7 +175,7 @@ sideBar("mobile");
 	};
 
 	socket.onerror = function(error) {
-		swal("An error occured", "The webserver socket failed to connect.", "error");
+		swal("An error occured", "The WebSocket server failed to connect.", "error");
 	};
 
 	socket.onclose = function(event) {

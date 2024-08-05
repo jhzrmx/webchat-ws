@@ -4,8 +4,17 @@ SET NAMES utf8;
 SET time_zone = '+00:00';
 SET foreign_key_checks = 0;
 
-CREATE DATABASE `webchat_ws` /*!40100 DEFAULT CHARACTER SET latin1 */;
+CREATE DATABASE IF NOT EXISTS `webchat_ws` /*!40100 DEFAULT CHARACTER SET latin1 */;
 USE `webchat_ws`;
+
+DROP TABLE IF EXISTS `users`;
+CREATE TABLE `users` (
+  `user_id` char(36) NOT NULL,
+  `full_name` varchar(50) NOT NULL,
+  `picture` text,
+  `last_active` datetime DEFAULT NULL,
+  PRIMARY KEY (`user_id`)
+) ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS `accounts`;
 CREATE TABLE `accounts` (
@@ -41,16 +50,6 @@ CREATE TABLE `friends` (
   PRIMARY KEY (`friend_id`),
   FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (`to_user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB;
-
-
-DROP TABLE IF EXISTS `users`;
-CREATE TABLE `users` (
-  `user_id` char(36) NOT NULL,
-  `full_name` varchar(50) NOT NULL,
-  `picture` text,
-  `last_active` datetime DEFAULT NULL,
-  PRIMARY KEY (`user_id`)
 ) ENGINE=InnoDB;
 
 

@@ -3,10 +3,11 @@ A simple real-time chat application written in PHP8.1.28 with Rachet as websocke
 The sql execution uses PHP Data Objects, which also means you can use other database as well.
 
 ## How to use?
-1. Clone this repository
-2. Navigate to `backend/` directory
-3. Run WebSocket server via command line:
+1. Clone this repository to your desired webserver (i.e., `htdocs` folder in XAMPP)
+2. Import the `webchat_sw.sql` file to your database
+3. Navigate to `backend/` directory
+4. Run WebSocket server via command line:
    ```
    php chatserver.php
    ```
-4. Open the browser and navigate to the website
+5. Run the webserver and navigate to the website

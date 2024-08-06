@@ -1,6 +1,6 @@
 # WebChat
-A simple real-time chat application written in PHP with Rachet as websocket and MySQL as database
-The sql execution uses PHP Data Objects, which also means you can use other database
+A simple real-time chat application written in PHP8.1.28 with Rachet as websocket and MySQL as database
+The sql execution uses PHP Data Objects, which also means you can use other database as well.
 
 ## How to use?
 1. Clone this repository

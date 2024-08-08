@@ -9,6 +9,7 @@ require 'components/SweetAlert.php';
 
 $html = new HTML("WebChat");
 $html->addLink('icon', 'img/icons/favicon.png');
+$html->addLink('stylesheet', 'styles/inter-variable.css');
 $html->addScript("js/tailwind3.4.5.js");
 $html->addScript("js/sweetalert.min.js");
 $html->startBody();

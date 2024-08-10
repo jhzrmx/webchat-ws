@@ -1,6 +1,7 @@
 <?php 
 require 'connection.php';
 require 'verifyLogin.php';
+require 'setUserActiveNow.php';
 
 header('Content-Type: application/json');
 

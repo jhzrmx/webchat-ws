@@ -1,6 +1,7 @@
 <?php 
 require 'connection.php';
 require 'verifyLogin.php';
+require 'setUserActiveNow.php';
 require '../components/ChatBubbles.php';
 
 date_default_timezone_set('Asia/Manila');
@@ -59,5 +60,7 @@ if (count($messages) > 0) {
 } else {
     echo "<p class=\"w-full flex items-center justify-center\">No conversations</p>";
 }
+
+setUserActiveNow($pdo, $_COOKIE['wcipa-ui']);
 
 ?>

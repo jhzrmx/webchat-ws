@@ -1,6 +1,7 @@
 <?php 
 require 'connection.php';
 require 'verifyLogin.php';
+require 'setUserActiveNow.php';
 require '../components/MessageList.php';
 
 if (!verifyLogin($pdo)) {
@@ -53,11 +54,11 @@ if ($search !== "") {
 $sql .= " ORDER BY last_message.sent_dt DESC;";
 
 $stmt = $pdo->prepare($sql);
-$stmt->bindParam(':current_user_id', $_COOKIE['wcipa-ui'], PDO::PARAM_STR);
+$stmt->bindParam(':current_user_id', $_COOKIE['wcipa-ui']);
 
 if ($search !== "") {
     $searchTerm = '%' . $search . '%';
-    $stmt->bindParam(':search', $searchTerm, PDO::PARAM_STR);
+    $stmt->bindParam(':search', $searchTerm);
 }
 
 $stmt->execute();
@@ -71,5 +72,7 @@ if (count($rows) > 0) {
 } else {
 	echo "<p class=\"text-center\"><br>No users found</p>";
 }
+
+setUserActiveNow($pdo, $_COOKIE['wcipa-ui']);
 
 ?>

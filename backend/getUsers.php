@@ -1,6 +1,7 @@
 <?php 
 require 'connection.php';
 require 'verifyLogin.php';
+require 'setUserActiveNow.php';
 
 if (!verifyLogin($pdo)) {
 	echo json_encode(['success' => false]);
@@ -50,11 +51,11 @@ if ($search !== "") {
 $sql .= " ORDER BY last_message.sent_dt DESC LIMIT 50;";
 
 $stmt = $pdo->prepare($sql);
-$stmt->bindParam(':current_user_id', $_COOKIE['wcipa-ui'], PDO::PARAM_STR);
+$stmt->bindParam(':current_user_id', $_COOKIE['wcipa-ui']);
 
 if ($search !== "") {
     $searchTerm = '%' . $search . '%';
-    $stmt->bindParam(':search', $searchTerm, PDO::PARAM_STR);
+    $stmt->bindParam(':search', $searchTerm);
 }
 
 $stmt->execute();
@@ -64,5 +65,7 @@ echo json_encode([
 	'success' => true,
     'users' => $rows
 ]);
+
+setUserActiveNow($pdo, $_COOKIE['wcipa-ui']);
 
 ?>

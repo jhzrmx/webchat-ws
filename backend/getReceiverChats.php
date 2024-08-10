@@ -31,4 +31,6 @@ echo json_encode([
     'conversation' => array_reverse($messages)
 ]);
 
+setUserActiveNow($pdo, $_COOKIE['wcipa-ui']);
+
 ?>

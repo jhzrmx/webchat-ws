@@ -4,10 +4,9 @@ The sql execution uses PHP Data Objects, which also means you can use other data
 
 ## How to use?
 1. Clone this repository to your desired webserver (i.e., `htdocs` folder in XAMPP)
-2. Start the MySQL (or other DB) server, then import the `webchat_ws.sql` file to your database
-3. Navigate to `backend/` directory
-4. Run WebSocket server via command line:
+2. Start the MySQL (or other RDB) server, then import the `webchat_ws.sql` file to your database
+3. Run WebSocket server via command line:
    ```
-   php chatserver.php
+   php start_chat_server
    ```
-5. Run the webserver and navigate to the website
+4. Run the webserver and navigate to the website

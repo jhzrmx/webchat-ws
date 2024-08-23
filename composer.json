@@ -3,7 +3,8 @@
         "cboden/ratchet": "^0.4.4"
     },
     "scripts": {
-        "start": [
+        "start chatserver": [
+            "Composer\\Config::disableProcessTimeout",
             "php backend/chatserver.php"
         ]
     }

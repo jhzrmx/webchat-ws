@@ -3,6 +3,8 @@ require 'connection.php';
 require 'verifyLogin.php';
 require 'setUserActiveNow.php';
 
+header('Content-Type: application/json');
+
 if (!verifyLogin($pdo)) {
 	echo json_encode(['success' => false]);
 	exit();

@@ -43,13 +43,9 @@ sideBar("mobile");
 ?>
 
 <div class="h-dvh grid grid-cols-1 md:grid-cols-3">
-    <!-- Left sidebar for friends list (hidden on mobile) -->
     <?php sideBar("desktop"); ?>
-
-    <!-- Main chat area (takes 2 columns on medium screens and larger) -->
     <div class="h-dvh md:col-span-2 p-4">
         <div class="w-full h-full flex flex-col overflow-hidden bg-gray-300 rounded-lg p-4">
-            <!-- User/Friend name (Top) -->
             <div class="flex mb-4">
             	<div id="userHeader" class="w-full flex items-center justify-start"></div>
             	<button id="openSideBarMobile" class="hover:bg-gray-50 rounded px-2">
@@ -58,12 +54,10 @@ sideBar("mobile");
             		</svg>
             	</button>
             </div>
-            <!-- Chat content (Middle) -->
             <div id="scrollableChats" class="flex-1 px-2 overflow-y-auto">
                 <div id="chatContent" class="mb-4">
                 </div>
             </div>
-            <!-- Textarea and send button (Bottom) -->
             <div id="bottomTextBar" class="flex mt-4">
                 <textarea id="messageContent" class="w-full rounded-3xl h-11 px-4 py-2 border-2 border-gray-300 focus:outline-none focus:border-blue-500 resize-none" rows="2" maxlength="2048" placeholder="Type your message..."></textarea>
                 <button id="sendMessage" class="ml-2 px-4 py-2 bg-blue-500 text-white rounded-3xl hover:bg-blue-600 focus:outline-none">Send</button>

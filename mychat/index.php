@@ -10,7 +10,7 @@ require '../components/MessageList.php';
 $html = new HTML("WebChat - My Chats");
 $html->addLink('stylesheet', '../styles/inter-variable.css');
 $html->addLink('icon', '../img/icons/favicon.png');
-$html->addScript("../js/tailwind3.4.5.js");
+$html->addScript("../js/tailwind4.js");
 $html->addScript("../js/jquery-3.7.1.min.js");
 $html->addScript("../js/sweetalert.min.js");
 $html->startBody();
@@ -42,7 +42,7 @@ sideBar("mobile");
         <div class="w-full h-full flex flex-col overflow-hidden bg-gray-300 rounded-lg p-4">
             <div class="flex mb-4">
             	<div id="userHeader" class="w-full flex items-center justify-start"></div>
-            	<button id="openSideBarMobile" class="hover:bg-gray-50 rounded px-2">
+            	<button id="openSideBarMobile" class="hover:bg-gray-50 hover:cursor-pointer rounded px-2">
             		<svg class="w-8 h-8 justify-end md:hidden" id="mdi-menu" viewBox="0 0 24 24">
             			<path d="M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z" />
             		</svg>
@@ -53,8 +53,8 @@ sideBar("mobile");
                 </div>
             </div>
             <div id="bottomTextBar" class="flex mt-4">
-                <textarea id="messageContent" class="w-full rounded-3xl h-11 px-4 py-2 border-2 border-gray-300 focus:outline-none focus:border-blue-500 resize-none" rows="2" maxlength="2048" placeholder="Type your message..."></textarea>
-                <button id="sendMessage" class="ml-2 px-4 py-2 bg-blue-500 text-white rounded-3xl hover:bg-blue-600 focus:outline-none">Send</button>
+                <textarea id="messageContent" class="w-full rounded-3xl h-11 px-4 py-2 border-2 border-gray-300 focus:outline-none bg-gray-100 focus:border-blue-500 resize-none" rows="2" maxlength="2048" placeholder="Type your message..."></textarea>
+                <button id="sendMessage" class="ml-2 px-4 py-2 bg-blue-500 text-white rounded-3xl hover:bg-blue-600 focus:outline-none hover:cursor-pointer">Send</button>
             </div>
             <div id="noUserSelMessage" class="flex w-full h-full">
             	<p class="w-full flex items-center justify-center">

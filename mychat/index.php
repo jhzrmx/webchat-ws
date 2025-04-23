@@ -42,8 +42,8 @@ sideBar("mobile");
         <div class="w-full h-full flex flex-col overflow-hidden bg-gray-300 rounded-lg p-4">
             <div class="flex mb-4">
             	<div id="userHeader" class="w-full flex items-center justify-start"></div>
-            	<button id="openSideBarMobile" class="hover:bg-gray-50 hover:cursor-pointer rounded px-2">
-            		<svg class="w-8 h-8 justify-end md:hidden" id="mdi-menu" viewBox="0 0 24 24">
+            	<button id="openSideBarMobile" class="hover:bg-gray-50 hover:cursor-pointer rounded md:hidden px-2">
+            		<svg class="w-8 h-8 justify-end" id="mdi-menu" viewBox="0 0 24 24">
             			<path d="M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z" />
             		</svg>
             	</button>

@@ -5,12 +5,12 @@ require 'setUserActiveNow.php';
 
 header('Content-Type: application/json');
 
-if (!verifyLogin($pdo) || !isset($_GET['uid'])) {
+if (!verifyLogin($jwt) || !isset($_GET['uid'])) {
 	echo json_encode(['success' => false]);
 	exit();
 }
 
-$senderUserId = $_COOKIE['wcipa-ui'];
+$current_user_id = $jwt->validateToken($_COOKIE['webchat_token'])['payload']['user_id'];
 $receiverUserId = $_GET['uid'];
 
 $stmt = $pdo->prepare("
@@ -21,7 +21,7 @@ $stmt = $pdo->prepare("
     LIMIT 50
 ");
 $stmt->execute([
-    ':sender_user_id' => $senderUserId,
+    ':sender_user_id' => $current_user_id,
     ':receiver_user_id' => $receiverUserId
 ]);
 $messages = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -31,6 +31,6 @@ echo json_encode([
     'conversation' => array_reverse($messages)
 ]);
 
-setUserActiveNow($pdo, $_COOKIE['wcipa-ui']);
+setUserActiveNow($pdo, $current_user_id);
 
 ?>

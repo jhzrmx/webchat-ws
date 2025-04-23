@@ -1,7 +1,7 @@
 <?php
 require '../backend/connection.php';
-require '../backend/verifyLogin.php';
 require '../backend/generateUID.php';
+require '../backend/verifyLogin.php';
 require '../components/SweetAlert.php';
 require '../components/HTML.php';
 require '../components/SideBar.php';
@@ -15,14 +15,8 @@ $html->addScript("../js/jquery-3.7.1.min.js");
 $html->addScript("../js/sweetalert.min.js");
 $html->startBody();
 
-function clearWebchatCookies() {
-	setcookie('wcipa-ai', '', time() + (86400 * 30), '/');
-	setcookie('wcipa-ui', '', time() + (86400 * 30), '/');
-	setcookie('wcipa-pw', '', time() + (86400 * 30), '/');
-}
-
-if (!verifyLogin($pdo)) {
-	clearWebchatCookies();
+$jwt_valid = $jwt->validateToken($_COOKIE['webchat_token']);
+if (!verifyLogin($jwt)) {
 	swalThen("Please login again.", "", "info", "() => window.location.href = '../'");
 }
 
@@ -72,9 +66,9 @@ sideBar("mobile");
 </div>
 
 <script type="text/javascript">
-	const senderUserId = "<?php echo $_COOKIE['wcipa-ui']; ?>";
-	const senderAccId = "<?php echo $_COOKIE['wcipa-ai']; ?>";
-	const senderHP = "<?php echo $_COOKIE['wcipa-pw']; ?>";
+	const senderUserId = "<?php echo $jwt_valid['payload']['user_id']; ?>";
+	const senderAccId = "<?php echo $jwt_valid['payload']['acc_id']; ?>";
+	const chatTk = "<?php echo $_COOKIE['webchat_token']; ?>";
 	var receiverUserId = "<?php echo isset($_GET['id']) ? $_GET['id'] : ''; ?>";
 	const $usersFriendsList = $("#usersFriendsList, #usersFriendsListMobile");
 	const $scrollableChats = $("#scrollableChats");
@@ -169,7 +163,7 @@ sideBar("mobile");
 	};
 
 	socket.onerror = function(error) {
-		swal("An error occured", "The WebSocket server failed to connect.", "error");
+		swal("An error occured", "Connection Failed to WebSocket server", "error");
 	};
 
 	socket.onclose = function(event) {
@@ -198,9 +192,7 @@ sideBar("mobile");
 		if ($messageContent.val().trim() === "") return;
 		const messageToSend = {
 			type: 'chat_message',
-			field1: senderAccId,
-			field2: senderHP,
-			sender_user_id: senderUserId,
+			tk: chatTk,
 			receiver_user_id: receiverUserId,
 			content: $messageContent.val().trim()
 		};

@@ -1,0 +1,72 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  PHPUnit:
+    name: PHPUnit (PHP ${{ matrix.php }} on ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - ubuntu-22.04
+          - windows-2022
+        php:
+          - 8.3
+          - 8.2
+          - 8.1
+          - 8.0
+          - 7.4
+          - 7.3
+          - 7.2
+          - 7.1
+          - 7.0
+          - 5.6
+          - 5.5
+          - 5.4
+          - 5.3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: xdebug
+          ini-file: development
+      - run: composer config secure-http false && composer config repo.packagist composer http://packagist.org && composer config preferred-install source
+        if: ${{ matrix.php < 5.5 && matrix.os == 'windows-2022' }} # legacy PHP on Windows is allowed to use insecure downloads until it will be removed again
+      - run: composer install
+      - run: vendor/bin/phpunit --coverage-text
+        if: ${{ matrix.php >= 7.3 }}
+      - run: vendor/bin/phpunit --coverage-text -c phpunit.xml.legacy
+        if: ${{ matrix.php < 7.3 }}
+
+  PHPUnit-macOS:
+    name: PHPUnit (macOS)
+    runs-on: macos-12
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.2
+          coverage: xdebug
+      - run: composer install
+      - run: vendor/bin/phpunit --coverage-text
+
+  PHPUnit-hhvm:
+    name: PHPUnit (HHVM)
+    runs-on: ubuntu-22.04
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - run: cp "$(which composer)" composer.phar && ./composer.phar self-update --2.2 # downgrade Composer for HHVM
+      - name: Run hhvm composer.phar install
+        uses: docker://hhvm/hhvm:3.30-lts-latest
+        with:
+          args: hhvm composer.phar install
+      - name: Run hhvm vendor/bin/phpunit
+        uses: docker://hhvm/hhvm:3.30-lts-latest
+        with:
+          args: hhvm vendor/bin/phpunit

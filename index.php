@@ -1,7 +1,7 @@
 <?php
 require 'backend/connection.php';
-require 'backend/verifyLogin.php';
 require 'backend/generateUID.php';
+require 'backend/verifyLogin.php';
 require 'components/HTML.php';
 require 'components/Login.php';
 require 'components/Signup.php';
@@ -18,20 +18,13 @@ if (isset($_GET['page'])) {
 	if ($_GET['page'] === 'signup') {
 		signupPage("WebChat - Signup");
 	} else {
-		header('location: components/');
+		header('location: ../');
 	}
 } else {
 	loginPage("WebChat - Login");
 }
 
-$cookieOptions = [
-    'expires' => time() + (86400 * 30), // 1 month
-    'path' => '/',
-    'secure' => true, // Ensure this is set to true if SameSite=None
-    'samesite' => 'None' // Set SameSite attribute
-];
-
-if (verifyLogin($pdo)) {
+if (verifyLogin($jwt)) {
 	header('location: mychat/');
 }
 
@@ -44,9 +37,14 @@ try {
 		if (count($rows) > 0) {
 			foreach ($rows as $row) {
 				if (password_verify($_POST['password'], $row['password'])) {
-					setcookie('wcipa-ai', $row['account_id'], time() + (86400 * 30), '/');
-					setcookie('wcipa-ui', $row['user_id'], time() + (86400 * 30), '/');
-					setcookie('wcipa-pw', $row['password'], time() + (86400 * 30), '/');
+					$payload = [
+					    'acc_id' => $row['account_id'],
+					    'user_id' => $row['user_id'],
+					    'exp' => time() + (3600 * 24 * 15), // 15 days
+					    'nbf' => time(),
+					];
+					$token = $jwt->createToken($payload);
+					setcookie('webchat_token', $token, $payload['exp'], '/');
 					swalThen("Login Successful", "Welcome, " . $row['full_name'], "success", "() => {window.location.href = 'mychat/'}");
 				} else {
 					swal("Wrong Password", "", "error");
@@ -77,9 +75,14 @@ try {
 
 			$stmt_usr->execute();
 			$stmt_acc->execute();
-			setcookie('wcipa-ui', $randomUserId, time() + (86400 * 30), '/');
-			setcookie('wcipa-ai', $randomAccountId, time() + (86400 * 30), '/');
-			setcookie('wcipa-pw', $hashedPassword, time() + (86400 * 30), '/');
+			$payload = [
+			    'acc_id' => $randomAccountId,
+			    'user_id' => $randomUserId,
+			    'exp' => time() + (3600 * 24 * 15), // 15 days
+			    'nbf' => time(),
+			];
+			$token = $jwt->createToken($payload);
+			setcookie('webchat_token', $token, $payload['exp'], '/');
 			swalThen("Signup Successful", "Welcome, " . $_POST['fullname'], "success", "() => {window.location.href = 'mychat/'}");
 		} else {
 			swal("Oops", "Username already taken", "error");

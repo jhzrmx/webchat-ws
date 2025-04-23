@@ -5,10 +5,12 @@ require 'setUserActiveNow.php';
 
 header('Content-Type: application/json');
 
-if (!verifyLogin($pdo)) {
+if (!verifyLogin($jwt)) {
 	echo json_encode(['success' => false]);
 	exit();
 }
+
+$current_user_id = $jwt->validateToken($_COOKIE['webchat_token'])['payload']['user_id'];
 
 $search = isset($_GET['search']) ? $_GET['search'] : "";
 
@@ -53,7 +55,7 @@ if ($search !== "") {
 $sql .= " ORDER BY last_message.sent_dt DESC LIMIT 50;";
 
 $stmt = $pdo->prepare($sql);
-$stmt->bindParam(':current_user_id', $_COOKIE['wcipa-ui']);
+$stmt->bindParam(':current_user_id', $current_user_id);
 
 if ($search !== "") {
     $searchTerm = '%' . $search . '%';
@@ -68,6 +70,6 @@ echo json_encode([
     'users' => $rows
 ]);
 
-setUserActiveNow($pdo, $_COOKIE['wcipa-ui']);
+setUserActiveNow($pdo, $current_user_id);
 
 ?>

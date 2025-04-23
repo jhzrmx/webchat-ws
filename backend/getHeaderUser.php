@@ -4,7 +4,7 @@ require 'verifyLogin.php';
 
 header('Content-Type: application/json');
 
-if (!verifyLogin($pdo) || !isset($_GET['uid'])) {
+if (!verifyLogin($jwt) || !isset($_GET['uid'])) {
 	echo json_encode(['success' => false]);
 	exit();
 }

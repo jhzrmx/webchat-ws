@@ -1,0 +1,150 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  PHPUnit:
+    name: PHPUnit (PHP ${{ matrix.php }})
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        php:
+          - 8.3
+          - 8.2
+          - 8.1
+          - 8.0
+          - 7.4
+          - 7.3
+          - 7.2
+          - 7.1
+          - 7.0
+          - 5.6
+          - 5.5
+          - 5.4
+          - 5.3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: xdebug
+          ini-file: development
+          ini-values: disable_functions='' # do not disable PCNTL functions on PHP < 8.1
+          extensions: sockets, pcntl ${{ matrix.php >= 5.6 && ', event' || '' }} ${{ matrix.php >= 5.4 && ', ev' || '' }}
+        env:
+          fail-fast: true # fail step if any extension can not be installed
+      - run: composer install
+      - run: vendor/bin/phpunit --coverage-text
+        if: ${{ matrix.php >= 7.3 }}
+      - run: vendor/bin/phpunit --coverage-text -c phpunit.xml.legacy
+        if: ${{ matrix.php < 7.3 }}
+
+  PHPUnit-Unstable:
+    name: PHPUnit (Unstable PHP ${{ matrix.php }})
+    runs-on: ubuntu-20.04
+    continue-on-error: true
+    strategy:
+      matrix:
+        php:
+          - 8.3
+          - 8.2
+          - 8.1
+          - 8.0
+          - 7.4
+          - 7.3
+          - 7.2
+          - 7.1
+          - 7.0
+          - 5.6
+          - 5.5
+          - 5.4
+          - 5.3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: xdebug
+          ini-file: development
+          extensions: sockets, pcntl
+      - name: Install ext-uv on PHP 7+
+        run: |
+          sudo apt-get update -q && sudo apt-get install libuv1-dev
+          echo "yes" | sudo pecl install ${{ matrix.php >= 8.0 && 'uv-0.3.0' || 'uv-0.2.4' }}
+          php -m | grep -q uv || echo "extension=uv.so" >> "$(php -r 'echo php_ini_loaded_file();')"
+        if: ${{ matrix.php >= 7.0 }}
+      - name: Install legacy ext-libevent on PHP < 7.0
+        run: |
+          sudo apt-get update && sudo apt-get install libevent-dev
+          curl http://pecl.php.net/get/libevent-0.1.0.tgz | tar -xz
+          pushd libevent-0.1.0
+          phpize
+          ./configure
+          make
+          sudo make install
+          popd
+          echo "extension=libevent.so" | sudo tee -a "$(php -r 'echo php_ini_loaded_file();')"
+        if: ${{ matrix.php < 7.0 }}
+      - name: Install legacy ext-libev on PHP < 7.0
+        run: |
+          git clone --recursive https://github.com/m4rw3r/php-libev
+          pushd php-libev
+          phpize
+          ./configure --with-libev
+          make
+          sudo make install
+          popd
+          echo "extension=libev.so" | sudo tee -a "$(php -r 'echo php_ini_loaded_file();')"
+        if: ${{ matrix.php < 7.0 }}
+      - run: composer install
+      - run: vendor/bin/phpunit --coverage-text
+        if: ${{ matrix.php >= 7.3 }}
+      - run: vendor/bin/phpunit --coverage-text -c phpunit.xml.legacy
+        if: ${{ matrix.php < 7.3 }}
+
+  PHPUnit-Windows:
+    name: PHPUnit (PHP ${{ matrix.php }} on Windows)
+    runs-on: windows-2022
+    continue-on-error: true
+    strategy:
+      matrix:
+        php:
+          - 8.3
+          - 8.2
+          - 8.1
+          - 8.0
+          - 7.4
+          - 7.3
+          - 7.2
+          - 7.1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: xdebug
+          ini-file: development
+          extensions: sockets,event # future: add uv-beta (installs, but can not load)
+      - run: composer install
+      - run: vendor/bin/phpunit --coverage-text
+        if: ${{ matrix.php >= 7.3 }}
+      - run: vendor/bin/phpunit --coverage-text -c phpunit.xml.legacy
+        if: ${{ matrix.php < 7.3 }}
+
+  PHPUnit-hhvm:
+    name: PHPUnit (HHVM)
+    runs-on: ubuntu-22.04
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - run: cp "$(which composer)" composer.phar && ./composer.phar self-update --2.2 # downgrade Composer for HHVM
+      - name: Run hhvm composer.phar install
+        uses: docker://hhvm/hhvm:3.30-lts-latest
+        with:
+          args: hhvm composer.phar install
+      - name: Run hhvm vendor/bin/phpunit
+        uses: docker://hhvm/hhvm:3.30-lts-latest
+        with:
+          args: hhvm vendor/bin/phpunit

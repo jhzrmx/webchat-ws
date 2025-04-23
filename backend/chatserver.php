@@ -1,6 +1,7 @@
 <?php
 require __DIR__ . '/../vendor/autoload.php';
 require 'generateUID.php';
+require 'JWTHandler.php';
 
 use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
@@ -12,6 +13,7 @@ class ChatServer implements MessageComponentInterface {
     protected $clients;
     protected $clientIds;
     protected $database;
+    protected $jwt;
 
     public function __construct() {
         $this->clients = new \SplObjectStorage;
@@ -22,6 +24,7 @@ class ChatServer implements MessageComponentInterface {
         $password = '';
         $this->database = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
         $this->database->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $this->jwt = new JWTHandler();
     }
 
     public function onOpen(ConnectionInterface $conn) {
@@ -45,27 +48,15 @@ class ChatServer implements MessageComponentInterface {
         }
     }
 
-    private function loginVerification($messageData) {
-        if (isset($messageData['field1']) && isset($messageData['field2']) && isset($messageData['sender_user_id'])) {
-            $stmt = $this->database->prepare("SELECT * FROM `accounts` JOIN `users` ON `accounts`.`user_id` = `users`.`user_id`  WHERE `accounts`.`account_id` = :account_id AND `accounts`.`password` = :password");
-            $stmt->bindParam(':account_id', $messageData['field1']);
-            $stmt->bindParam(':password', $messageData['field2']);
-            $stmt->execute();
-            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            return count($rows) > 0;
-        } else {
-            return false;
-        }
-    }
-
     protected function sendChatMessage(ConnectionInterface $from, $messageData) {
-        if (!$this->loginVerification($messageData)) {
+        $webchatToken = $messageData['tk'];
+        $jwt_valid = $this->jwt->validateToken($webchatToken);
+        if (!$jwt_valid['is_valid']) {
             return;
         }
         $randomChatId = generateUID();
-        $accountId = $messageData['field1'];
-        $password = $messageData['field2'];
-        $senderUserId = $messageData['sender_user_id'];
+        $senderUserId = $jwt_valid['payload']['user_id'];
+        $senderAccountId = $jwt_valid['payload']['acc_id'];
         $receiverUserId = $messageData['receiver_user_id'];
         $messageContent = htmlspecialchars($messageData['content'], ENT_QUOTES, 'UTF-8');
         

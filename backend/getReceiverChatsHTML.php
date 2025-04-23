@@ -6,12 +6,12 @@ require '../components/ChatBubbles.php';
 
 date_default_timezone_set('Asia/Manila');
 
-if (!verifyLogin($pdo) || !isset($_GET['uid'])) {
+if (!verifyLogin($jwt) || !isset($_GET['uid'])) {
 	echo "<p class=\"w-full flex items-center justify-center\">Unable to fetch messages</p>";
 	exit();
 }
 
-$senderUserId = $_COOKIE['wcipa-ui'];
+$current_user_id = $jwt->validateToken($_COOKIE['webchat_token'])['payload']['user_id'];
 $receiverUserId = $_GET['uid'];
 
 $stmt = $pdo->prepare("
@@ -22,7 +22,7 @@ $stmt = $pdo->prepare("
     LIMIT 50
 ");
 $stmt->execute([
-    ':sender_user_id' => $senderUserId,
+    ':sender_user_id' => $current_user_id,
     ':receiver_user_id' => $receiverUserId
 ]);
 $messages = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -51,7 +51,7 @@ $messages = array_reverse($messages);
 if (count($messages) > 0) {
     foreach ($messages as $message) {
         $sentDate = new DateTime($message['sent_dt']);
-        if ($message['sender_user_id'] === $_COOKIE['wcipa-ui']) {
+        if ($message['sender_user_id'] === $current_user_id) {
             senderBubble($message['text_sent'], timeSince($sentDate));
         } else {
             receiverBubble($message['text_sent'], timeSince($sentDate));
@@ -61,6 +61,6 @@ if (count($messages) > 0) {
     echo "<p class=\"w-full flex items-center justify-center\">No conversations</p>";
 }
 
-setUserActiveNow($pdo, $_COOKIE['wcipa-ui']);
+setUserActiveNow($pdo, $current_user_id);
 
 ?>

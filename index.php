@@ -18,7 +18,7 @@ if (isset($_GET['page'])) {
 	if ($_GET['page'] === 'signup') {
 		signupPage("WebChat - Signup");
 	} else {
-		header('location: ../');
+		header('location: components/');
 	}
 } else {
 	loginPage("WebChat - Login");

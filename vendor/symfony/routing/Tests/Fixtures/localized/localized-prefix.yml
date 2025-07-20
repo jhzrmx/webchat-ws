@@ -1,6 +1,0 @@
-important_controllers:
-  resource: Symfony\Component\Routing\Tests\Fixtures\AttributeFixtures\RouteWithPriorityController
-  type: attribute
-  prefix:
-    cs: /cs
-    en: /en

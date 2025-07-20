@@ -36,7 +36,9 @@ class JWTHandler {
             return ['is_valid' => false, 'reason' => 'Invalid token structure'];
         }
 
-        [$headerEncoded, $payloadEncoded, $signatureEncoded] = $parts;
+        $headerEncoded = $parts[0];
+        $payloadEncoded = $parts[1];
+        $signatureEncoded = $parts[2];
 
         $decodedHeader = json_decode($this->base64UrlDecode($headerEncoded), true);
         $decodedPayload = json_decode($this->base64UrlDecode($payloadEncoded), true);

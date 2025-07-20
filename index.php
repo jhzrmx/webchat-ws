@@ -44,7 +44,16 @@ try {
 					    'nbf' => time(),
 					];
 					$token = $jwt->createToken($payload);
-					setcookie('webchat_token', $token, $payload['exp'], '/');
+					setcookie(
+					    'webchat_token',
+					    $token,
+					    [	'expires' => $payload['exp'],
+					        'path' => '/',
+					        'secure' => false,         // use true if HTTPS
+					        'httponly' => true,        // Not accessible via JavaScript
+					        'samesite' => 'Strict',    // Prevents CSRF and some XSS vectors
+					    ]
+					);
 					swalThen("Login Successful", "Welcome, " . $row['full_name'], "success", "() => {window.location.href = 'mychat/'}");
 				} else {
 					swal("Wrong Password", "", "error");
@@ -82,7 +91,16 @@ try {
 			    'nbf' => time(),
 			];
 			$token = $jwt->createToken($payload);
-			setcookie('webchat_token', $token, $payload['exp'], '/');
+			setcookie(
+			    'webchat_token',
+			    $token,
+			    [	'expires' => $payload['exp'],
+			        'path' => '/',
+			        'secure' => false,         // use true if HTTPS
+			        'httponly' => true,        // Not accessible via JavaScript
+			        'samesite' => 'Strict',    // Prevents CSRF and some XSS vectors
+			    ]
+			);
 			swalThen("Signup Successful", "Welcome, " . $_POST['fullname'], "success", "() => {window.location.href = 'mychat/'}");
 		} else {
 			swal("Oops", "Username already taken", "error");
